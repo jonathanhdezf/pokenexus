@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Modelos necesarios para NextAuth
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? 
+  access_token       String? 
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? 
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String?   // Para Credentials Provider
+  image         String?
+  
+  // Custom properties
+  username        String?   @unique
+  reputationScore Int       @default(0)
+  isVerified      Boolean   @default(false)
+  walletBalance   Decimal   @default(0.00)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Relaciones de Dominio
+  listings        Listing[]
+  bids            Bid[]
+  collection      UserCard[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Modelos de Dominio (Sin cambios funcionales, solo referencias)
+
+model CardCatalog {
+  id            String   @id @default(uuid())
+  apiId         String   @unique
+  name          String
+  set           String
+  cardNumber    String
+  rarity        String?
+  imageUrl      String?
+  releaseDate   DateTime?
+  tcgPlayerUrl  String?
+  createdAt     DateTime @default(now())
+
+  marketPrices  MarketPrice[]
+  listings      Listing[]
+  userCards     UserCard[]
+}
+
+model MarketPrice {
+  id            String   @id @default(uuid())
+  cardId        String
+  card          CardCatalog @relation(fields: [cardId], references: [id])
+  price         Decimal
+  source        String
+  condition     String
+  recordedAt    DateTime @default(now())
+}
+
+model Listing {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  cardId        String
+  card          CardCatalog   @relation(fields: [cardId], references: [id])
+  type          String 
+  price         Decimal
+  condition     String
+  images        String 
+  status        String @default("ACTIVE")
+  endsAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  bids          Bid[]
+}
+
+model Bid {
+  id            String   @id @default(uuid())
+  listingId     String
+  listing       Listing  @relation(fields: [listingId], references: [id])
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  amount        Decimal
+  placedAt      DateTime @default(now())
+}
+
+model UserCard {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  cardId        String
+  card          CardCatalog @relation(fields: [cardId], references: [id])
+  condition     String
+  acquiredPrice Decimal?
+  acquiredAt    DateTime @default(now())
+}
