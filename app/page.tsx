@@ -16,73 +16,33 @@ export default function Home() {
     const [cache] = useState<Map<string, any[]>>(new Map());
 
     const handleSearch = async (query: string, isInitial = false) => {
-        const cacheKey = isInitial ? "initial_v2" : query.trim().toLowerCase();
-
-        // 1. Verificar Cache para carga instantánea
-        if (cache.has(cacheKey)) {
-            setCards(cache.get(cacheKey) || []);
-            if (!isInitial) setExecutedSearchTerm(query);
-            return;
-        }
-
         setIsLoading(true);
         if (!isInitial) setExecutedSearchTerm(query);
 
         try {
             let q = "";
             if (isInitial) {
-                // Mejora Senior: Seleccionamos sets de gran volumen para asegurar resultados
-                const premiumSets = ["swsh12pt5", "swsh11", "swsh10", "sv1", "sv2", "sv3", "sv4"];
-                const randomSet = premiumSets[Math.floor(Math.random() * premiumSets.length)];
-                // Query más amplia para evitar resultados vacíos
-                q = `set.id:${randomSet} (rarity:"rare*" OR rarity:"ultra*" OR rarity:"promo")`;
+                // Query simple que garantiza resultados raras
+                q = 'name:Pikachu';
             } else {
                 const cleanQuery = query.trim();
                 if (!cleanQuery) {
                     setIsLoading(false);
                     return;
                 }
-                q = `name:"*${cleanQuery}*"`;
+                q = `name:"${cleanQuery}*"`;
             }
 
-            const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=6&orderBy=-set.releaseDate`;
+            const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=6`;
 
-            // Timeout extendido a 10s para redes inestables
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-            const response = await fetch(url, {
-                signal: controller.signal,
-                headers: { "X-Api-Key": "7878696b-1667-4581-9f9b-648439d56285" } // API Key pública para mejorar rate limiting
-            });
-            clearTimeout(timeoutId);
-
+            const response = await fetch(url);
             if (!response.ok) throw new Error(`Status: ${response.status}`);
 
             const data = await response.json();
-            const fetchedCards = data.data || [];
-
-            // Guardar en cache
-            cache.set(cacheKey, fetchedCards);
-            setCards(fetchedCards);
+            setCards(data.data || []);
         } catch (error: any) {
-            console.warn("Nexus Engine Retry Logic:", error.name === 'AbortError' ? 'Timeout' : error.message);
-
-            // Fallback robusto en caso de error
-            if (isInitial && !cache.has("fallback")) {
-                try {
-                    const fallbackRes = await fetch(`https://api.pokemontcg.io/v2/cards?q=rarity:rare&pageSize=6`);
-                    const fallbackData = await fallbackRes.json();
-                    setCards(fallbackData.data || []);
-                    cache.set("fallback", fallbackData.data);
-                } catch (e) {
-                    setCards([]);
-                }
-            } else if (isInitial && cache.has("fallback")) {
-                setCards(cache.get("fallback") || []);
-            } else {
-                setCards([]);
-            }
+            console.error("Nexus Dev Error:", error);
+            setCards([]);
         } finally {
             setIsLoading(false);
         }
