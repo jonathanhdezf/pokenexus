@@ -52,37 +52,38 @@ export default function StreamingPage() {
                 {/* Player Container */}
                 <motion.div
                     layout
-                    className={`relative transition-all duration-700 overflow-hidden shadow-3xl group ${isTheaterMode
+                    className={`relative transition-all duration-700 overflow-hidden shadow-3xl bg-black ${isTheaterMode
                             ? 'w-full h-[85vh] rounded-none'
                             : 'aspect-video w-full rounded-[40px] border border-white/10'
                         }`}
                 >
-                    {/* Theater Mode Exit Button */}
-                    {isTheaterMode && (
-                        <button
-                            onClick={() => setIsTheaterMode(false)}
-                            className="absolute top-6 right-6 z-50 px-4 py-2 rounded-lg bg-black/60 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2"
-                        >
-                            Salir de modo teatro
-                        </button>
-                    )}
-
-                    <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-all duration-500" />
-
-                    {/* The Iframe with Full Interaction Support */}
+                    {/* The Iframe with Optimized Embed URL and Full Permissions */}
                     <iframe
-                        src="https://pluto.tv/latam/live-tv/6870072ca9d5c45c3e9466f1?msockid=0c2e9bd020c663e914428d3d21596216"
-                        className="w-full h-full border-none"
-                        allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture; microphone; camera; midi; fullscreen; volume"
+                        src="https://pluto.tv/live-tv/6870072ca9d5c45c3e9466f1/embed?autoplay=true&mute=false"
+                        className="absolute inset-0 w-full h-full border-none z-0"
+                        allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen; volume"
                         allowFullScreen
+                        loading="lazy"
                     ></iframe>
 
-                    {/* Overlay Decor - Only in Normal Mode */}
+                    {/* Theater Mode Exit Button - Placed inside a safe container to not block video controls */}
+                    {isTheaterMode && (
+                        <div className="absolute top-0 right-0 p-6 z-50">
+                            <button
+                                onClick={() => setIsTheaterMode(false)}
+                                className="px-4 py-2 rounded-lg bg-black/80 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 shadow-2xl"
+                            >
+                                Salir del Modo Teatro
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Visual Overlay - Only pointer-events-none to never block clicks */}
                     {!isTheaterMode && (
-                        <>
-                            <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
-                            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                        </>
+                        <div className="absolute inset-0 pointer-events-none z-10">
+                            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/80 to-transparent opacity-60" />
+                            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/80 to-transparent opacity-60" />
+                        </div>
                     )}
                 </motion.div>
 
