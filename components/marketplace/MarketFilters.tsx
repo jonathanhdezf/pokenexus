@@ -40,7 +40,7 @@ export default function MarketFilters() {
                     name="search"
                     type="text"
                     defaultValue={searchParams.get("q") || ""}
-                    placeholder="Search cards, sets, or attributes..."
+                    placeholder="Buscar cartas, sets o atributos..."
                     className="w-full bg-surface border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-primary/50 transition-all text-lg placeholder:text-gray-600"
                 />
             </form>
@@ -51,14 +51,14 @@ export default function MarketFilters() {
                     defaultValue={searchParams.get("sort") || "trending"}
                     className="flex-1 md:flex-none bg-surface border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-primary/50 appearance-none font-bold text-sm cursor-pointer hover:border-white/20 transition-colors bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%207.5L10%2012.5L15%207.5%22%20stroke%3D%22%23666%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:20px] bg-[right_1.5rem_center] bg-no-repeat pr-12"
                 >
-                    <option value="trending">Sort by: Trending</option>
-                    <option value="price_desc">Price: High to Low</option>
-                    <option value="price_asc">Price: Low to High</option>
-                    <option value="newest">Newest Arrivals</option>
+                    <option value="trending">Ordenar por: Tendencia</option>
+                    <option value="price_desc">Precio: Mayor a Menor</option>
+                    <option value="price_asc">Precio: Menor a Mayor</option>
+                    <option value="newest">Nuevas Llegadas</option>
                 </select>
 
                 <button className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-colors font-bold text-sm">
-                    All Rarities
+                    Todas las Rarezas
                 </button>
             </div>
         </div>

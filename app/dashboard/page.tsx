@@ -38,10 +38,10 @@ export default async function DashboardPage() {
         <main className="min-h-screen pt-24 px-6 max-w-7xl mx-auto pb-20">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                 <div className="flex flex-col">
-                    <h1 className="text-4xl font-bold font-display mb-2">My Collection</h1>
+                    <h1 className="text-4xl font-bold font-display mb-2">Mi Colección</h1>
                     <nav className="flex gap-4 mt-2">
-                        <Link href="/dashboard" className="text-sm font-bold text-white border-b-2 border-primary pb-1">Collection</Link>
-                        <Link href="/dashboard/listings" className="text-sm font-bold text-gray-400 hover:text-white transition-colors pb-1">My Shop</Link>
+                        <Link href="/dashboard" className="text-sm font-bold text-white border-b-2 border-primary pb-1">Colección</Link>
+                        <Link href="/dashboard/listings" className="text-sm font-bold text-gray-400 hover:text-white transition-colors pb-1">Mi Tienda</Link>
                     </nav>
                 </div>
 
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
                             <Coins className="text-yellow-500 w-6 h-6" />
                         </div>
                         <div>
-                            <div className="text-xs text-gray-500 uppercase font-bold">Wallet Balance</div>
+                            <div className="text-xs text-gray-500 uppercase font-bold">Saldo de Billetera</div>
                             <div className="text-xl font-mono font-bold text-white">${Number(user.walletBalance).toLocaleString()}</div>
                         </div>
                     </div>
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
                             <TrendingUp className="text-green-500 w-6 h-6" />
                         </div>
                         <div>
-                            <div className="text-xs text-gray-500 uppercase font-bold">Portfolio Value</div>
+                            <div className="text-xs text-gray-500 uppercase font-bold">Valor de Portafolio</div>
                             <div className="text-xl font-mono font-bold text-green-400">${collectionValue.toLocaleString()}</div>
                         </div>
                     </div>
@@ -70,9 +70,9 @@ export default async function DashboardPage() {
 
             {user.collection.length === 0 ? (
                 <div className="text-center py-20 border border-dashed border-white/10 rounded-xl bg-surface/30">
-                    <p className="text-gray-400 mb-4">Your collection is empty.</p>
+                    <p className="text-gray-400 mb-4">Tu colección está vacía.</p>
                     <a href="/marketplace" className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold rounded-lg hover:bg-cyan-400 transition-colors">
-                        <Plus className="w-4 h-4" /> Start Collecting
+                        <Plus className="w-4 h-4" /> Empezar a Coleccionar
                     </a>
                 </div>
             ) : (
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
                                 {item.card.imageUrl ? (
                                     <img src={item.card.imageUrl} alt={item.card.name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-gray-800 flex items-center justify-center">No Image</div>
+                                    <div className="w-full h-full bg-gray-800 flex items-center justify-center">Sin Imagen</div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                                     <div>
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
                                 </div>
                             </div>
                             <div className="p-3 border-t border-white/5 bg-black/50">
-                                <div className="text-xs text-gray-500">Acquired</div>
+                                <div className="text-xs text-gray-500">Adquirido</div>
                                 <div className="font-mono text-sm">${Number(item.acquiredPrice).toLocaleString()}</div>
                             </div>
                         </div>

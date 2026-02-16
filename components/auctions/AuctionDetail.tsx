@@ -58,7 +58,7 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
             const distance = end - now;
 
             if (distance < 0) {
-                setTimeLeft("Auction Ended");
+                setTimeLeft("Subasta Finalizada");
                 setIsEnded(true);
                 if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
                 return;
@@ -114,13 +114,13 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
     const handleBid = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!session) {
-            setError("Please login to place a bid.");
+            setError("Por favor inicia sesión para pujar.");
             return;
         }
 
         const amount = Number(bidAmount);
         if (!amount || amount <= currentPrice) {
-            setError("Bid must be higher than current price.");
+            setError("La puja debe ser mayor al precio actual.");
             return;
         }
 
@@ -141,7 +141,7 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
                 throw new Error(data.message || "Failed to place bid");
             }
 
-            setSuccessMsg("Bid placed successfully!");
+            setSuccessMsg("¡Puja realizada con éxito!");
             setBidAmount("");
 
             // Optimistic Update
@@ -170,7 +170,7 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
                         {card.imageUrl ? (
                             <img src={card.imageUrl} alt={card.name} className="w-full h-full object-contain p-4" />
                         ) : (
-                            <div className="flex items-center justify-center h-full text-gray-500">No Image</div>
+                            <div className="flex items-center justify-center h-full text-gray-500">Sin Imagen</div>
                         )}
                     </div>
 
@@ -181,7 +181,7 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                             </span>
-                            <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Live Auction</span>
+                            <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Subasta en Vivo</span>
                         </div>
                     )}
                 </div>
@@ -200,15 +200,15 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
 
                     <div className="flex flex-wrap gap-4 mb-8">
                         <div className="flex-1 min-w-[200px] bg-surface/50 border border-white/10 p-4 rounded-xl backdrop-blur-sm">
-                            <p className="text-xs text-gray-500 uppercase font-bold mb-1">Current Bid</p>
+                            <p className="text-xs text-gray-500 uppercase font-bold mb-1">Puja Actual</p>
                             <div className="flex items-baseline gap-2">
                                 <span className="text-4xl font-mono font-bold text-white">${currentPrice.toLocaleString()}</span>
-                                {bids.length > 0 && <span className="text-green-500 text-xs font-bold flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> {bids.length} bids</span>}
+                                {bids.length > 0 && <span className="text-green-500 text-xs font-bold flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> {bids.length} pujas</span>}
                             </div>
                         </div>
 
                         <div className="flex-1 min-w-[200px] bg-surface/50 border border-white/10 p-4 rounded-xl backdrop-blur-sm">
-                            <p className="text-xs text-gray-500 uppercase font-bold mb-1">Time Remaining</p>
+                            <p className="text-xs text-gray-500 uppercase font-bold mb-1">Tiempo Restante</p>
                             <div className="text-3xl font-mono font-bold text-primary flex items-center gap-2">
                                 <Clock className="w-6 h-6 animate-pulse" />
                                 {timeLeft}
@@ -220,7 +220,7 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
                 {!isEnded ? (
                     <div className="bg-surface border border-white/10 rounded-2xl p-6 md:p-8">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <Gavel className="w-5 h-5 text-primary" /> Place a Bid
+                            <Gavel className="w-5 h-5 text-primary" /> Realizar una Puja
                         </h3>
 
                         <form onSubmit={handleBid} className="space-y-4">
@@ -231,7 +231,7 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
                                     value={bidAmount}
                                     onChange={(e) => setBidAmount(e.target.value)}
                                     className="w-full pl-8 pr-4 py-4 bg-black/50 border border-white/10 rounded-xl text-white text-lg font-mono outline-none focus:border-primary transition-colors placeholder:text-gray-600"
-                                    placeholder={`Enter $${minBid}+`}
+                                    placeholder={`Ingresa $${minBid}+`}
                                     min={minBid}
                                 />
                             </div>
@@ -268,22 +268,22 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
                                 disabled={isLoading}
                                 className="w-full py-4 bg-primary text-black font-bold text-lg rounded-xl hover:bg-cyan-400 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                {isLoading ? <span className="animate-pulse">Processing...</span> : 'Place Bid'}
+                                {isLoading ? <span className="animate-pulse">Procesando...</span> : 'Pujar'}
                             </button>
 
                             <p className="text-center text-xs text-gray-500 mt-2">
-                                Your wallet balance: <span className="text-white font-bold">${Number((session?.user as any)?.walletBalance || 0).toLocaleString()}</span>
+                                Tu saldo de billetera: <span className="text-white font-bold">${Number((session?.user as any)?.walletBalance || 0).toLocaleString()}</span>
                             </p>
                         </form>
                     </div>
                 ) : (
                     <div className="bg-surface border border-white/10 rounded-2xl p-8 text-center opacity-75">
-                        <h3 className="text-2xl font-bold mb-2 text-gray-300">Auction Ended</h3>
-                        <p className="text-gray-500">This listing is no longer accepting bids.</p>
+                        <h3 className="text-2xl font-bold mb-2 text-gray-300">Subasta Finalizada</h3>
+                        <p className="text-gray-500">Este listado ya no acepta pujas.</p>
                         {bids.length > 0 && (
                             <div className="mt-4 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
-                                <p className="text-green-500 font-bold">Sold for ${currentPrice.toLocaleString()}</p>
-                                <p className="text-xs text-gray-400 mt-1">Winner: {bids[0].user?.username || 'Private User'}</p>
+                                <p className="text-green-500 font-bold">Vendido por ${currentPrice.toLocaleString()}</p>
+                                <p className="text-xs text-gray-400 mt-1">Ganador: {bids[0].user?.username || 'Usuario Privado'}</p>
                             </div>
                         )}
                     </div>
@@ -292,12 +292,12 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
                 {/* Bid History */}
                 <div className="bg-surface/30 border border-white/5 rounded-xl overflow-hidden">
                     <div className="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <h3 className="font-bold text-sm uppercase tracking-wider text-gray-400">Bid History</h3>
-                        <span className="text-xs text-gray-500">{bids.length} bids total</span>
+                        <h3 className="font-bold text-sm uppercase tracking-wider text-gray-400">Historial de Pujas</h3>
+                        <span className="text-xs text-gray-500">{bids.length} pujas en total</span>
                     </div>
                     <div className="max-h-64 overflow-y-auto custom-scrollbar">
                         {bids.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 text-sm">No bids yet. Be the first!</div>
+                            <div className="p-8 text-center text-gray-500 text-sm">Sin pujas aún. ¡Sé el primero!</div>
                         ) : (
                             <div className="divide-y divide-white/5">
                                 <AnimatePresence>

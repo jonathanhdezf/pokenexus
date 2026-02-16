@@ -54,9 +54,9 @@ export default async function MarketplacePage({ searchParams }: Props) {
     return (
         <main className="min-h-screen pt-24 px-6 max-w-7xl mx-auto pb-20">
             <div className="mb-12">
-                <h1 className="text-5xl font-bold mb-4 font-display">Marketplace</h1>
+                <h1 className="text-5xl font-bold mb-4 font-display">Mercado</h1>
                 <p className="text-gray-400 max-w-xl">
-                    Browse verified listings and real-time market data. All cards are authenticated via our rigorous digital verification process.
+                    Explora listados verificados y datos de mercado en tiempo real. Todas las cartas son autenticadas mediante nuestro riguroso proceso de verificación digital.
                 </p>
             </div>
 
@@ -84,8 +84,8 @@ export default async function MarketplacePage({ searchParams }: Props) {
 
             {sortedCards.length === 0 && (
                 <div className="text-center py-20 bg-surface/30 border border-dashed border-white/10 rounded-3xl">
-                    <p className="text-gray-500 mb-2">No cards found matching your criteria.</p>
-                    <p className="text-sm text-gray-600">Try searching for something else or clearing filters.</p>
+                    <p className="text-gray-500 mb-2">No se encontraron cartas que coincidan con tus criterios.</p>
+                    <p className="text-sm text-gray-600">Intenta buscar otra cosa o limpiar los filtros.</p>
                 </div>
             )}
         </main>

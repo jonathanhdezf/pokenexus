@@ -39,10 +39,10 @@ export default function Home() {
                 <div className="z-10 max-w-5xl px-4 animate-fade-in-up">
                     <div className="mb-6 flex justify-center space-x-2">
                         <span className="px-3 py-1 text-xs font-bold tracking-wider text-primary border border-primary/30 rounded-full bg-primary/10 uppercase drop-shadow-glow">
-                            Beta Access Now Open
+                            Acceso Beta ya Abierto
                         </span>
                         <span className="px-3 py-1 text-xs font-bold tracking-wider text-secondary border border-secondary/30 rounded-full bg-secondary/10 uppercase drop-shadow-glow">
-                            Live Auctions
+                            Subastas en Vivo
                         </span>
                     </div>
 
@@ -51,8 +51,8 @@ export default function Home() {
                     </h1>
 
                     <p className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
-                        The premier marketplace for elite collectors. <br className="hidden md:block" />
-                        Buy, sell, and analyze cards with <span className="text-white font-medium">real-time market data</span>.
+                        El mercado principal para coleccionistas de élite. <br className="hidden md:block" />
+                        Compra, vende y analiza cartas con <span className="text-white font-medium">datos de mercado en tiempo real</span>.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -61,7 +61,7 @@ export default function Home() {
                             className="group relative px-8 py-4 bg-white text-black font-bold text-lg rounded-full overflow-hidden transition-transform hover:scale-105"
                         >
                             <span className="relative z-10 flex items-center gap-2">
-                                Explore Market <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                Explorar Mercado <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </span>
                             <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-10 transition-opacity" />
                         </Link>
@@ -70,7 +70,7 @@ export default function Home() {
                             href="/auctions"
                             className="px-8 py-4 bg-white/5 border border-white/10 backdrop-blur-md text-white font-bold text-lg rounded-full hover:bg-white/10 transition-colors flex items-center gap-2"
                         >
-                            <Flame className="w-5 h-5 text-orange-500" /> Live Auctions
+                            <Flame className="w-5 h-5 text-orange-500" /> Subastas en Vivo
                         </Link>
                     </div>
                 </div>
@@ -83,9 +83,9 @@ export default function Home() {
             {/* Features Grid */}
             <section className="w-full max-w-7xl px-6 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
-                    { icon: TrendingUp, title: "Real-Time Values", desc: "Access verified sales data from eBay, TCGPlayer, and PWCC instantly." },
-                    { icon: ShieldCheck, title: "Authenticity Guarantee", desc: "Every graded card is verified against certification databases." },
-                    { icon: Search, title: "Portfolio Tracking", desc: "Track your collection's value over time with advanced analytics." }
+                    { icon: TrendingUp, title: "Valores en Tiempo Real", desc: "Accede instantáneamente a datos de ventas verificados de eBay, TCGPlayer y PWCC." },
+                    { icon: ShieldCheck, title: "Garantía de Autenticidad", desc: "Cada carta graduada es verificada contra bases de datos de certificación oficiales." },
+                    { icon: Search, title: "Seguimiento de Portafolio", desc: "Rastrea el valor de tu colección a lo largo del tiempo con análisis avanzados." }
                 ].map((feature, i) => (
                     <div key={i} className="p-8 rounded-2xl bg-surface border border-white/5 hover:border-primary/20 transition-colors group">
                         <feature.icon className="w-12 h-12 text-gray-500 group-hover:text-primary mb-6 transition-colors" />
@@ -100,11 +100,11 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-end mb-12">
                         <div>
-                            <h2 className="text-4xl md:text-5xl font-bold mb-2 font-display">Trending Now</h2>
-                            <p className="text-gray-400">Hottest cards moving in the market this hour.</p>
+                            <h2 className="text-4xl md:text-5xl font-bold mb-2 font-display">Tendencias de Hoy</h2>
+                            <p className="text-gray-400">Las cartas más calientes moviéndose en el mercado esta hora.</p>
                         </div>
                         <Link href="/marketplace" className="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            View All <ArrowRight className="w-4 h-4" />
+                            Ver Todo <ArrowRight className="w-4 h-4" />
                         </Link>
                     </div>
 

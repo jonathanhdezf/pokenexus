@@ -38,14 +38,14 @@ export default async function MyListingsPage() {
         <main className="min-h-screen pt-24 px-6 max-w-7xl mx-auto pb-20">
             <div className="flex justify-between items-end mb-12">
                 <div>
-                    <h1 className="text-4xl font-bold font-display mb-2">My Shop</h1>
-                    <p className="text-gray-400">Manage your active listings and track your sales performance.</p>
+                    <h1 className="text-4xl font-bold font-display mb-2">Mi Tienda</h1>
+                    <p className="text-gray-400">Gestiona tus listados activos y rastrea el rendimiento de tus ventas.</p>
                 </div>
                 <Link
                     href="/sell"
                     className="px-6 py-3 bg-primary text-black font-bold rounded-xl hover:bg-cyan-400 transition-colors flex items-center gap-2 shadow-lg shadow-primary/20"
                 >
-                    <Tag className="w-4 h-4" /> List New Card
+                    <Tag className="w-4 h-4" /> Listar Nueva Carta
                 </Link>
             </div>
 
@@ -54,12 +54,12 @@ export default async function MyListingsPage() {
                 <section>
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        Active Listings ({activeListings.length})
+                        Listados Activos ({activeListings.length})
                     </h2>
 
                     {activeListings.length === 0 ? (
                         <div className="p-12 border border-dashed border-white/10 rounded-3xl text-center bg-white/5">
-                            <p className="text-gray-500">You don't have any active listings right now.</p>
+                            <p className="text-gray-500">No tienes listados activos en este momento.</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -84,14 +84,14 @@ export default async function MyListingsPage() {
                                                 <div className="space-y-2">
                                                     <div className="flex justify-between text-xs">
                                                         <span className="text-gray-500">
-                                                            {listing.type === "AUCTION" ? "Current Bid" : "Listed Price"}
+                                                            {listing.type === "AUCTION" ? "Puja Actual" : "Precio de Lista"}
                                                         </span>
                                                         <span className="text-white font-mono font-bold">${currentPrice.toLocaleString()}</span>
                                                     </div>
                                                     {listing.type === "AUCTION" && (
                                                         <div className="flex justify-between text-xs">
                                                             <span className="text-gray-500 flex items-center gap-1">
-                                                                <Users className="w-3 h-3" /> Bids
+                                                                <Users className="w-3 h-3" /> Pujas
                                                             </span>
                                                             <span className="text-white font-bold">{listing.bids.length}</span>
                                                         </div>
@@ -103,13 +103,13 @@ export default async function MyListingsPage() {
                                         <div className="px-4 py-3 bg-white/5 border-t border-white/5 flex justify-between items-center">
                                             <div className="flex items-center gap-2 text-[10px] text-gray-500">
                                                 <Clock className="w-3 h-3" />
-                                                {listing.endsAt ? `Ends ${new Date(listing.endsAt).toLocaleDateString()}` : "Permanent"}
+                                                {listing.endsAt ? `Termina ${new Date(listing.endsAt).toLocaleDateString()}` : "Permanente"}
                                             </div>
                                             <Link
                                                 href={listing.type === "AUCTION" ? `/auctions/${listing.id}` : `/marketplace/${listing.cardId}`}
                                                 className="text-[10px] font-bold text-primary hover:underline"
                                             >
-                                                View Live
+                                                Ver en Vivo
                                             </Link>
                                         </div>
                                     </div>
@@ -122,15 +122,15 @@ export default async function MyListingsPage() {
                 {/* Performance Stats Placeholder */}
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gradient-to-br from-purple-900/40 to-black p-6 rounded-3xl border border-purple-500/20">
-                        <h3 className="text-gray-400 text-xs font-bold uppercase mb-4 tracking-widest">Total Sales</h3>
+                        <h3 className="text-gray-400 text-xs font-bold uppercase mb-4 tracking-widest">Ventas Totales</h3>
                         <p className="text-4xl font-mono font-bold text-white">$0.00</p>
                     </div>
                     <div className="bg-gradient-to-br from-primary/20 to-black p-6 rounded-3xl border border-primary/20">
-                        <h3 className="text-gray-400 text-xs font-bold uppercase mb-4 tracking-widest">Cards Sold</h3>
+                        <h3 className="text-gray-400 text-xs font-bold uppercase mb-4 tracking-widest">Cartas Vendidas</h3>
                         <p className="text-4xl font-mono font-bold text-white">0</p>
                     </div>
                     <div className="bg-gradient-to-br from-green-900/40 to-black p-6 rounded-3xl border border-green-500/20">
-                        <h3 className="text-gray-400 text-xs font-bold uppercase mb-4 tracking-widest">Avg. ROI</h3>
+                        <h3 className="text-gray-400 text-xs font-bold uppercase mb-4 tracking-widest">ROI Promedio</h3>
                         <p className="text-4xl font-mono font-bold text-white">+0%</p>
                     </div>
                 </section>

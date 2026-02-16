@@ -19,10 +19,10 @@ export default function Header() {
                 </Link>
 
                 <nav className="hidden md:flex gap-8 text-sm font-medium text-gray-400">
-                    <Link href="/marketplace" className="hover:text-white transition-colors">Marketplace</Link>
-                    <Link href="/auctions" className="hover:text-white transition-colors">Auctions</Link>
-                    <Link href="/sell" className="hover:text-white transition-colors">Sell</Link>
-                    <Link href="/community" className="hover:text-white transition-colors">Community</Link>
+                    <Link href="/marketplace" className="hover:text-white transition-colors">Mercado</Link>
+                    <Link href="/auctions" className="hover:text-white transition-colors">Subastas</Link>
+                    <Link href="/sell" className="hover:text-white transition-colors">Vender</Link>
+                    <Link href="/community" className="hover:text-white transition-colors">Comunidad</Link>
                 </nav>
 
                 <div className="flex items-center gap-4">

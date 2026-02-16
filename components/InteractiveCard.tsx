@@ -75,7 +75,7 @@ export default function InteractiveCard({ id, name, set, price, imageUrl, rarity
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                         ) : (
-                            <span>No Image</span>
+                            <span>Sin Imagen</span>
                         )}
                     </div>
 
@@ -114,7 +114,7 @@ export default function InteractiveCard({ id, name, set, price, imageUrl, rarity
                         {name}
                     </h3>
                     <div className="flex justify-between items-end">
-                        <span className="text-xs text-gray-400 font-medium tracking-wide">MARKET VALUE</span>
+                        <span className="text-xs text-gray-400 font-medium tracking-wide">VALOR DE MERCADO</span>
                         <span className="text-xl font-mono text-cyan-400 font-black drop-shadow-glow">
                             {price}
                         </span>
