@@ -11,41 +11,41 @@ export default function Home() {
     const [executedSearchTerm, setExecutedSearchTerm] = useState("");
     const [cards, setCards] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [page, setPage] = useState(1);
 
-    // Cache Senior para optimizar carga y evitar peticiones redundantes
-    const [cache] = useState<Map<string, any[]>>(new Map());
-
-    const handleSearch = async (query: string, isInitial = false) => {
+    const fetchCatalog = async (query = "", pageNum = 1) => {
         setIsLoading(true);
-        if (!isInitial) setExecutedSearchTerm(query);
+        if (query) setExecutedSearchTerm(query);
+        else if (pageNum === 1) setExecutedSearchTerm("");
 
         try {
-            // Sintaxis v2: name:pikachu o name:"pikachu"
-            const q = isInitial ? "name:pikachu" : `name:"${query.trim()}*"`;
-            const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=6`;
+            // Si hay búsqueda, buscamos por nombre. Si no, traemos lo más nuevo del mercado.
+            const q = query.trim() ? `name:"${query.trim()}*"` : "";
+            const url = `https://api.pokemontcg.io/v2/cards?${q ? `q=${encodeURIComponent(q)}&` : ""}pageSize=12&page=${pageNum}&orderBy=-set.releaseDate`;
 
-            console.log("Nexus Fetching:", url);
+            console.log("Nexus Catalog Fetching:", url);
 
             const response = await fetch(url);
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`API ${response.status}: ${errText}`);
-            }
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
             const data = await response.json();
-            console.log("Nexus Data Received:", data.data?.length, "cards");
-            setCards(data.data || []);
+
+            if (pageNum === 1) {
+                setCards(data.data || []);
+            } else {
+                setCards(prev => [...prev, ...(data.data || [])]);
+            }
         } catch (error: any) {
-            console.error("Nexus Critical Error:", error);
-            setCards([]);
+            console.error("Nexus Catalog Error:", error);
+            if (pageNum === 1) setCards([]);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Al montar, cargamos las cartas destacadas iniciales
+    // Carga inicial del catálogo completo (lo más nuevo)
     useEffect(() => {
-        handleSearch("", true);
+        fetchCatalog();
     }, []);
 
     const getMarketPrice = (card: any) => {
@@ -117,10 +117,18 @@ export default function Home() {
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-gray-500 focus:outline-none focus:border-primary/50 transition-all font-medium pr-12"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchTerm)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        setPage(1);
+                                        fetchCatalog(searchTerm, 1);
+                                    }
+                                }}
                             />
                             <button
-                                onClick={() => handleSearch(searchTerm)}
+                                onClick={() => {
+                                    setPage(1);
+                                    fetchCatalog(searchTerm, 1);
+                                }}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition-colors"
                             >
                                 <Search className="w-5 h-5" />
@@ -232,6 +240,28 @@ export default function Home() {
                             </div>
                         )}
                     </div>
+
+                    {cards && cards.length > 0 && cards.length % 12 === 0 && (
+                        <div className="mt-20 flex justify-center">
+                            <button
+                                onClick={() => {
+                                    const nextPage = page + 1;
+                                    setPage(nextPage);
+                                    fetchCatalog(executedSearchTerm, nextPage);
+                                }}
+                                disabled={isLoading}
+                                className="px-12 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-primary/20 hover:border-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed group flex items-center gap-4"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    <>
+                                        Cargar más cartas <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </section>
         </main>
