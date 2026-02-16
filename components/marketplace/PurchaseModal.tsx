@@ -99,7 +99,7 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
                     />
                     <audio
                         ref={catchSfxRef}
-                        src="https://archive.org/download/caught-a-pokemon/Caught%20a%20Pokemon%21.mp3"
+                        src="https://play.pokemonshowdown.com/audio/sfx/dexregistration.mp3"
                         className="hidden"
                     />
                     <motion.div

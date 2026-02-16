@@ -82,13 +82,13 @@ export default function LoginPage() {
             {/* Audio Element */}
             <audio
                 ref={audioRef}
-                src="https://archive.org/download/Pokemon-Opening/01%20Pokemon%20Theme.mp3"
+                src="https://raw.githubusercontent.com/The-Power-Group/Pokemon-Red-Blue-Crystal-Music/master/Red%20Blue%20Yellow/mp3/03%20Pallet%20Town%20Theme.mp3"
                 className="hidden"
                 muted={isMuted}
             />
             <audio
                 ref={sfxRef}
-                src="https://archive.org/download/caught-a-pokemon/Caught%20a%20Pokemon%21.mp3"
+                src="https://play.pokemonshowdown.com/audio/sfx/itemget.mp3"
                 className="hidden"
             />
 
@@ -112,7 +112,7 @@ export default function LoginPage() {
                                     />
                                 ))}
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Pokémon Theme</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Pallet Town (8-bit)</span>
                         </motion.div>
                     )}
                 </AnimatePresence>
