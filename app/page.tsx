@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, Flame, Search, TrendingUp, ShieldCheck } from "lucide-react";
 import InteractiveCard from "@/components/InteractiveCard";
