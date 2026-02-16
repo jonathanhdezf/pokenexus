@@ -13,6 +13,7 @@ export default function Home() {
     const [cards, setCards] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
+    const [apiError, setApiError] = useState<string | null>(null);
 
     const POKEMON_TYPES = [
         "Colorless", "Darkness", "Dragon", "Fairy", "Fighting",
@@ -21,6 +22,7 @@ export default function Home() {
 
     const fetchCatalog = async (query = "", pageNum = 1, type = selectedType) => {
         setIsLoading(true);
+        setApiError(null);
         if (query) setExecutedSearchTerm(query);
         else if (pageNum === 1 && !type) setExecutedSearchTerm("");
 
@@ -29,37 +31,63 @@ export default function Home() {
             if (query.trim()) queryParts.push(`name:"${query.trim()}*"`);
             if (type) queryParts.push(`types:"${type}"`);
 
-            const qString = queryParts.length > 0 ? `q=${encodeURIComponent(queryParts.join(" "))}` : "";
+            // Si no hay filtros, forzamos una búsqueda de pokemon para asegurar que la API devuelva algo
+            if (queryParts.length === 0) queryParts.push("supertype:pokemon");
+
+            const qString = `q=${encodeURIComponent(queryParts.join(" "))}`;
             const pageParam = `pageSize=12&page=${pageNum}`;
-            const url = `https://api.pokemontcg.io/v2/cards?${qString}${qString ? "&" : ""}${pageParam}`;
+            const url = `https://api.pokemontcg.io/v2/cards?${qString}&${pageParam}&orderBy=-set.releaseDate`;
+
+            console.log("Nexus Engine -> Contacting:", url);
 
             const response = await fetch(url, {
                 cache: 'no-store',
                 headers: { 'Accept': 'application/json' }
             });
 
-            if (!response.ok) throw new Error(`Status ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}: Error de conexión con el servidor TCG`);
 
             const data = await response.json();
             const results = data.data || [];
 
             if (pageNum === 1) {
                 setCards(results);
+                if (results.length === 0) setApiError("No se encontraron cartas en esta categoría.");
             } else {
                 setCards(prev => [...prev, ...results]);
             }
         } catch (error: any) {
             console.error("Nexus Engine Error:", error.message);
+            setApiError(`Conexión limitada: ${error.message}`);
+
             if (pageNum === 1) {
-                // Fallback de emergencia con una carta garantizada para verificar renderizado
-                setCards([{
-                    id: "swsh12pt5-160",
-                    name: "Pikachu (Offline Mode)",
-                    set: { name: "Crown Zenith" },
-                    images: { large: "https://images.pokemontcg.io/swsh12pt5/160_hires.png" },
-                    rarity: "Rare Holo VMAX",
-                    cardmarket: { prices: { averageSellPrice: 0 } }
-                }]);
+                // Cartas Offline de alta calidad para no dejar el sitio vacío
+                setCards([
+                    {
+                        id: "swsh12pt5-160",
+                        name: "Pikachu VMAX",
+                        set: { name: "Crown Zenith" },
+                        images: { large: "https://images.pokemontcg.io/swsh12pt5/160_hires.png" },
+                        rarity: "Ultra Rare",
+                        tcgplayer: { prices: { holofoil: { market: 250.0 } } }
+                    },
+                    {
+                        id: "cel25-4",
+                        name: "Charizard",
+                        set: { name: "Celebrations" },
+                        images: { large: "https://images.pokemontcg.io/cel25/4_hires.png" },
+                        rarity: "Rare Holo",
+                        tcgplayer: { prices: { holofoil: { market: 85.0 } } }
+                    },
+                    {
+                        id: "swsh10-188",
+                        name: "Origin Forme Dialga VSTAR",
+                        set: { name: "Astral Radiance" },
+                        images: { large: "https://images.pokemontcg.io/swsh10/188_hires.png" },
+                        rarity: "Secret Rare",
+                        cardmarket: { prices: { averageSellPrice: 120.0 } }
+                    }
+                ]);
             }
         } finally {
             setIsLoading(false);
@@ -235,7 +263,19 @@ export default function Home() {
                                         ? `CARTAS TIPO ${selectedType.toUpperCase()}`
                                         : "CATÁLOGO NEXUS"}
                             </h2>
-                            <p className="text-gray-400">Datos verificados en tiempo real por el Nexus.</p>
+                            <p className="text-gray-400 flex items-center gap-3">
+                                {apiError ? (
+                                    <>
+                                        <span className="text-primary font-bold uppercase tracking-widest text-[10px] bg-primary/10 px-2 py-1 rounded border border-primary/20">{apiError}</span>
+                                        <button
+                                            onClick={() => fetchCatalog(searchTerm, 1)}
+                                            className="text-[10px] text-white hover:text-primary transition-colors underline font-black"
+                                        >
+                                            REINTENTAR CONEXIÓN
+                                        </button>
+                                    </>
+                                ) : "Datos verificados en tiempo real por el Nexus."}
+                            </p>
                         </div>
                         <div className="flex items-center gap-4">
                             {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
