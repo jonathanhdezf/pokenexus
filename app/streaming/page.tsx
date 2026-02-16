@@ -5,19 +5,7 @@ import { motion } from "framer-motion";
 import { Tv, Info, Play, Signal } from "lucide-react";
 
 export default function StreamingPage() {
-    const [isTheaterMode, setIsTheaterMode] = useState(false);
-
-    // Keyboard Shortcut (t) for Theater Mode
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key.toLowerCase() === 't') {
-                setIsTheaterMode(prev => !prev);
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
+    const [isTheaterMode, setIsTheaterMode] = useState(true);
 
     return (
         <main className={`min-h-screen bg-nexus transition-all duration-700 ${isTheaterMode ? 'pt-20 bg-black' : 'pt-32 pb-20 px-6'}`}>
@@ -65,10 +53,16 @@ export default function StreamingPage() {
                 <motion.div
                     layout
                     className={`relative transition-all duration-700 overflow-hidden shadow-3xl bg-black ${isTheaterMode
-                        ? 'w-full h-[85vh] rounded-none'
-                        : 'aspect-video w-full rounded-[40px] border border-white/10'
+                            ? 'w-full h-[88vh] rounded-none'
+                            : 'aspect-video w-full rounded-[40px] border border-white/10'
                         }`}
                 >
+                    {/* Master Interaction Tip - Floating Badge */}
+                    <div className="absolute top-24 left-1/2 -translate-x-1/2 z-40 pointer-events-none group-hover:opacity-0 transition-opacity">
+                        <div className="px-4 py-2 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">
+                            Haz clic y presiona (M) y (T) para sonido y modo cine total
+                        </div>
+                    </div>
                     {/* The Iframe with Specific Latam Channel requested by User */}
                     <iframe
                         src="https://pluto.tv/latam/live-tv/6870072ca9d5c45c3e9466f1?msockid=0c2e9bd020c663e914428d3d21596216"
