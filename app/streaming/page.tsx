@@ -1,11 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Tv, Info, Play, Signal } from "lucide-react";
 
 export default function StreamingPage() {
     const [isTheaterMode, setIsTheaterMode] = useState(false);
+
+    // Keyboard Shortcut (t) for Theater Mode
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key.toLowerCase() === 't') {
+                setIsTheaterMode(prev => !prev);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     return (
         <main className={`min-h-screen bg-nexus transition-all duration-700 ${isTheaterMode ? 'pt-20 bg-black' : 'pt-32 pb-20 px-6'}`}>
