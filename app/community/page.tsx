@@ -6,11 +6,11 @@ import { MessageSquare, Heart, Share2, Award, Zap } from "lucide-react";
 const mockPosts = [
     {
         id: 1,
-        user: "TrainerAsh",
-        action: "just secured a",
+        user: "EntrenadorAsh",
+        action: "acaba de asegurar un",
         card: "Charizard VMAX (Shiny)",
         price: "$120.00",
-        time: "2m ago",
+        time: "hace 2m",
         likes: 24,
         comments: 5,
         avatar: "A"
@@ -18,10 +18,10 @@ const mockPosts = [
     {
         id: 2,
         user: "MistyWater",
-        action: "listed for auction",
+        action: "listó para subasta",
         card: "Lugia V (Alt Art)",
-        price: "Starting at $250.00",
-        time: "15m ago",
+        price: "Comenzando en $250.00",
+        time: "hace 15m",
         likes: 12,
         comments: 2,
         avatar: "M"
@@ -29,10 +29,10 @@ const mockPosts = [
     {
         id: 3,
         user: "BrockRock",
-        action: "joined the Elite Collector club",
+        action: "se unió al club de Coleccionistas de Élite",
         card: "",
         price: "",
-        time: "1h ago",
+        time: "hace 1h",
         likes: 45,
         comments: 12,
         avatar: "B"
@@ -44,13 +44,13 @@ export default function CommunityPage() {
         <main className="min-h-screen pt-24 px-6 max-w-4xl mx-auto pb-20">
             <div className="flex justify-between items-end mb-12">
                 <div>
-                    <h1 className="text-4xl font-bold font-display mb-2">Nexus Feed</h1>
-                    <p className="text-gray-400">See what's happening in the PokéNexus world.</p>
+                    <h1 className="text-4xl font-bold font-display mb-2">Noticias Nexus</h1>
+                    <p className="text-gray-400">Mira lo que está sucediendo en el mundo PokéNexus.</p>
                 </div>
                 <div className="flex gap-4">
                     <div className="bg-surface border border-white/10 px-4 py-2 rounded-xl flex items-center gap-2">
                         <Zap className="w-4 h-4 text-yellow-500" />
-                        <span className="text-sm font-bold">1,240 Online</span>
+                        <span className="text-sm font-bold">1,240 En Línea</span>
                     </div>
                 </div>
             </div>
@@ -98,9 +98,9 @@ export default function CommunityPage() {
 
             <div className="mt-12 p-8 border border-dashed border-white/10 rounded-3xl text-center bg-white/5">
                 <Award className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-400 mb-2">Trade Requests Coming Soon</h3>
+                <h3 className="text-xl font-bold text-gray-400 mb-2">Solicitudes de Intercambio Próximamente</h3>
                 <p className="text-gray-500 max-w-sm mx-auto">
-                    We're building a safe and secure peer-to-peer trading system. Stay tuned!
+                    Estamos construyendo un sistema de comercio seguro peer-to-peer. ¡Mantente al tanto!
                 </p>
             </div>
         </main>

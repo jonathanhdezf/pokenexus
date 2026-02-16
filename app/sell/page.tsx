@@ -19,8 +19,8 @@ export default function SellPage() {
     return (
         <main className="min-h-screen pt-24 px-6 max-w-4xl mx-auto pb-20">
             <div className="mb-12">
-                <h1 className="text-4xl font-bold font-display mb-2">List Your Card</h1>
-                <p className="text-gray-400">Convert your collection into liquidity in minutes.</p>
+                <h1 className="text-4xl font-bold font-display mb-2">Publica tu Carta</h1>
+                <p className="text-gray-400">Convierte tu colección en liquidez en minutos.</p>
             </div>
 
             {/* Stepper */}
@@ -44,13 +44,13 @@ export default function SellPage() {
                     >
                         <section>
                             <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">
-                                1. Select the Card
+                                1. Selecciona la Carta
                             </label>
                             <div className="relative group">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="Search by Pokémon name or set..."
+                                    placeholder="Buscar por nombre de Pokémon o set..."
                                     className="w-full bg-surface border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-primary/50 transition-all text-lg"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -72,7 +72,7 @@ export default function SellPage() {
                                                 <p className="font-bold text-white group-hover:text-primary transition-colors">{card.name}</p>
                                                 <p className="text-xs text-gray-500">{card.set} • {card.number}</p>
                                             </div>
-                                            <div className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Market: $120.00</div>
+                                            <div className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Mercado: $120.00</div>
                                         </button>
                                     ))}
                                 </div>
@@ -82,8 +82,8 @@ export default function SellPage() {
                         <div className="p-6 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex gap-4">
                             <Info className="text-blue-400 shrink-0" />
                             <p className="text-sm text-blue-200/70 leading-relaxed">
-                                Can't find your card? Please ensure you're searching using the official name or set code.
-                                We currently only support English and Japanese TCG sets.
+                                ¿No puedes encontrar tu carta? Por favor asegúrate de buscar usando el nombre oficial o el código del set.
+                                Actualmente solo admitimos sets de TCG en inglés y japonés.
                             </p>
                         </div>
                     </motion.div>
@@ -99,7 +99,7 @@ export default function SellPage() {
                     >
                         <section>
                             <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
-                                2. Listing Details
+                                2. Detalles de la Publicación
                             </label>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -110,8 +110,8 @@ export default function SellPage() {
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-4 ${listingType === "FIXED" ? 'bg-primary text-black' : 'bg-white/5 text-gray-400'}`}>
                                         <DollarSign className="w-6 h-6" />
                                     </div>
-                                    <h3 className="font-bold text-lg">Buy It Now</h3>
-                                    <p className="text-sm text-gray-400">Sell instantly at a set price.</p>
+                                    <h3 className="font-bold text-lg">Compra Inmediata</h3>
+                                    <p className="text-sm text-gray-400">Vende al instante a un precio fijo.</p>
                                 </button>
 
                                 <button
@@ -121,26 +121,26 @@ export default function SellPage() {
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-4 ${listingType === "AUCTION" ? 'bg-orange-500 text-black' : 'bg-white/5 text-gray-400'}`}>
                                         <Gavel className="w-6 h-6" />
                                     </div>
-                                    <h3 className="font-bold text-lg">Auction</h3>
-                                    <p className="text-sm text-gray-400">Let the market decide the value.</p>
+                                    <h3 className="font-bold text-lg">Subasta</h3>
+                                    <p className="text-sm text-gray-400">Deja que el mercado decida el valor.</p>
                                 </button>
                             </div>
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-2">Card Condition</label>
+                                    <label className="block text-sm font-medium text-gray-400 mb-2">Estado de la Carta</label>
                                     <select className="w-full bg-surface border border-white/10 rounded-xl py-3 px-4 outline-none focus:border-primary/50 text-white appearance-none">
                                         <option>Near Mint (NM)</option>
                                         <option>Lightly Played (LP)</option>
                                         <option>Moderately Played (MP)</option>
                                         <option>Heavily Played (HP)</option>
-                                        <option>Damaged</option>
+                                        <option>Damaged (Dañada)</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-2">
-                                        {listingType === "FIXED" ? "Price ($)" : "Starting Bid ($)"}
+                                        {listingType === "FIXED" ? "Precio ($)" : "Puja Inicial ($)"}
                                     </label>
                                     <div className="relative">
                                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
@@ -150,18 +150,18 @@ export default function SellPage() {
                                             className="w-full bg-surface border border-white/10 rounded-xl py-3 pl-8 pr-4 outline-none focus:border-primary/50 text-white font-mono"
                                         />
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-2">Recommended: $115.00 - $125.00 based on recent sales.</p>
+                                    <p className="text-xs text-gray-500 mt-2">Recomendado: $115.00 - $125.00 basado en ventas recientes.</p>
                                 </div>
                             </div>
                         </section>
 
                         <div className="flex justify-between">
-                            <button onClick={() => setStep(1)} className="text-gray-400 hover:text-white font-bold px-6">Back</button>
+                            <button onClick={() => setStep(1)} className="text-gray-400 hover:text-white font-bold px-6">Atrás</button>
                             <button
                                 onClick={() => setStep(3)}
                                 className="px-10 py-4 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition-all"
                             >
-                                Continue
+                                Continuar
                             </button>
                         </div>
                     </motion.div>
@@ -177,42 +177,42 @@ export default function SellPage() {
                     >
                         <section>
                             <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
-                                3. Photos & Confirmation
+                                3. Fotos y Confirmación
                             </label>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                                 <div className="aspect-[3/4] border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
                                     <Camera className="w-8 h-8 text-gray-500 group-hover:text-primary transition-colors" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Front Card</span>
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Frente</span>
                                 </div>
                                 <div className="aspect-[3/4] border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
                                     <Camera className="w-8 h-8 text-gray-500 group-hover:text-primary transition-colors" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Back Card</span>
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Reverso</span>
                                 </div>
                                 <div className="aspect-[3/4] border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
                                     <Camera className="w-8 h-8 text-gray-500 group-hover:text-primary transition-colors" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Edges</span>
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Bordes</span>
                                 </div>
                                 <div className="aspect-[3/4] border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
                                     <Plus className="w-8 h-8 text-gray-500 group-hover:text-primary transition-colors" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Add More</span>
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Añadir Más</span>
                                 </div>
                             </div>
 
                             <div className="bg-surface border border-white/10 rounded-2xl p-6">
-                                <h3 className="font-bold mb-4">Final Summary</h3>
+                                <h3 className="font-bold mb-4">Resumen Final</h3>
                                 <div className="space-y-3 text-sm">
                                     <div className="flex justify-between text-gray-400">
-                                        <span>Listing Type</span>
-                                        <span className="text-white font-medium">{listingType === "FIXED" ? "Buy It Now" : "Auction"}</span>
+                                        <span>Tipo de Listado</span>
+                                        <span className="text-white font-medium">{listingType === "FIXED" ? "Compra Inmediata" : "Subasta"}</span>
                                     </div>
                                     <div className="flex justify-between text-gray-400">
-                                        <span>Platform Fee (2%)</span>
-                                        <span className="text-green-500 font-medium">Free for Beta</span>
+                                        <span>Tarifa de Plataforma (2%)</span>
+                                        <span className="text-green-500 font-medium">Gratis por Beta</span>
                                     </div>
                                     <div className="h-px bg-white/5 my-2" />
                                     <div className="flex justify-between text-lg font-bold">
-                                        <span>Potential Earnings</span>
+                                        <span>Ganancias Potenciales</span>
                                         <span className="text-primary font-mono">$120.00</span>
                                     </div>
                                 </div>
@@ -220,12 +220,12 @@ export default function SellPage() {
                         </section>
 
                         <div className="flex justify-between">
-                            <button onClick={() => setStep(2)} className="text-gray-400 hover:text-white font-bold px-6">Back</button>
+                            <button onClick={() => setStep(2)} className="text-gray-400 hover:text-white font-bold px-6">Atrás</button>
                             <Link
                                 href="/dashboard"
                                 className="px-10 py-4 bg-primary text-black font-bold rounded-2xl hover:bg-cyan-400 transition-all flex items-center gap-2"
                             >
-                                <CheckCircle2 className="w-5 h-5" /> Publish Listing
+                                <CheckCircle2 className="w-5 h-5" /> Publicar Listado
                             </Link>
                         </div>
                     </motion.div>
