@@ -19,12 +19,19 @@ export default function Home() {
     const handleSearch = async (query: string) => {
         setIsLoading(true);
         try {
-            const q = query || "rarity:\"Rare Holo VMAX\"";
-            const response = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"*${q}*"&pageSize=6`);
+            const q = query || "Pikachu";
+            // Usamos una sintaxis de búsqueda más limpia y robusta para la API v2
+            const response = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"${q}*"&pageSize=6&orderBy=-set.releaseDate`);
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
             const data = await response.json();
             setCards(data.data || []);
         } catch (error) {
             console.error("Error fetching cards:", error);
+            setCards([]); // Limpiar cartas para quitar el estado de carga
         } finally {
             setIsLoading(false);
         }
