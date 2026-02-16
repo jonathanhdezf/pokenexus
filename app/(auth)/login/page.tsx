@@ -56,14 +56,19 @@ export default function LoginPage() {
 
             if (res?.error) {
                 setError("Credenciales inválidas. Intenta de nuevo.");
+                setIsLoading(false);
             } else {
                 // Play catch sound
                 if (sfxRef.current) {
                     sfxRef.current.volume = 0.5;
                     sfxRef.current.play().catch(() => { });
                 }
-                router.push("/marketplace");
-                router.refresh();
+
+                // Wait for the sound to play before redirecting
+                setTimeout(() => {
+                    router.push("/marketplace");
+                    router.refresh();
+                }, 1500);
             }
         } catch (error) {
             setError("Ocurrió un error inesperado.");
