@@ -1,140 +1,58 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Search, TrendingUp, ShieldCheck, Loader2 } from "lucide-react";
-import InteractiveCard from "@/components/InteractiveCard";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Search, TrendingUp, ShieldCheck } from "lucide-react";
+import CardCatalog from "@/components/CardCatalog";
 
-export default function Home() {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [executedSearchTerm, setExecutedSearchTerm] = useState("");
-    const [selectedType, setSelectedType] = useState("");
-    const [cards, setCards] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [page, setPage] = useState(1);
-    const [apiError, setApiError] = useState<string | null>(null);
-
-    const POKEMON_TYPES = [
-        "Colorless", "Darkness", "Dragon", "Fairy", "Fighting",
-        "Fire", "Grass", "Lightning", "Metal", "Psychic", "Water"
-    ];
-
-    const fetchCatalog = async (query = "", pageNum = 1, type = selectedType) => {
-        setIsLoading(true);
-        setApiError(null);
-        if (query) setExecutedSearchTerm(query);
-        else if (pageNum === 1 && !type) setExecutedSearchTerm("");
-
-        try {
-            const queryParts = [];
-            if (query.trim()) queryParts.push(`name:"${query.trim()}*"`);
-            if (type) queryParts.push(`types:"${type}"`);
-
-            // Si no hay filtros, forzamos una búsqueda de pokemon para asegurar que la API devuelva algo
-            if (queryParts.length === 0) queryParts.push("supertype:pokemon");
-
-            const qString = `q=${encodeURIComponent(queryParts.join(" "))}`;
-            const pageParam = `pageSize=12&page=${pageNum}`;
-
-            // Usamos nuestro proxy interno para evitar bloqueos del navegador (Adblock/CORS)
-            const url = `/api/pokemon?${qString}&${pageParam}&orderBy=-set.releaseDate`;
-
-            console.log("Nexus Engine -> Using Server Proxy:", url);
-
-            const response = await fetch(url);
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error || `Status ${response.status}`);
+// Función que corre en el SERVIDOR (no en el navegador del usuario)
+async function getInitialCards() {
+    try {
+        const res = await fetch(
+            "https://api.pokemontcg.io/v2/cards?q=supertype:pokemon&pageSize=12&page=1&orderBy=-set.releaseDate",
+            {
+                headers: {
+                    "X-Api-Key": "7878696b-1667-4581-9f9b-648439d56285",
+                    Accept: "application/json",
+                },
+                next: { revalidate: 120 }, // Cache por 2 min en servidor
             }
+        );
 
-            const data = await response.json();
-            const results = data.data || [];
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
+        return data.data || [];
+    } catch (e) {
+        console.error("Server fetch failed:", e);
+        // Fallback offline con cartas conocidas
+        return [
+            {
+                id: "swsh12pt5-160",
+                name: "Pikachu VMAX",
+                set: { name: "Crown Zenith" },
+                images: { large: "https://images.pokemontcg.io/swsh12pt5/160_hires.png" },
+                rarity: "Ultra Rare",
+                tcgplayer: { prices: { holofoil: { market: 250.0 } } },
+            },
+            {
+                id: "cel25-4",
+                name: "Charizard",
+                set: { name: "Celebrations" },
+                images: { large: "https://images.pokemontcg.io/cel25/4_hires.png" },
+                rarity: "Rare Holo",
+                tcgplayer: { prices: { holofoil: { market: 85.0 } } },
+            },
+            {
+                id: "swsh10-188",
+                name: "Origin Forme Dialga VSTAR",
+                set: { name: "Astral Radiance" },
+                images: { large: "https://images.pokemontcg.io/swsh10/188_hires.png" },
+                rarity: "Secret Rare",
+                cardmarket: { prices: { averageSellPrice: 120.0 } },
+            },
+        ];
+    }
+}
 
-            if (pageNum === 1) {
-                setCards(results);
-                if (results.length === 0) setApiError("No se encontraron cartas en esta categoría.");
-            } else {
-                setCards(prev => [...prev, ...results]);
-            }
-        } catch (error: any) {
-            console.error("Nexus Engine Error:", error.message);
-            setApiError(`Conexión limitada: ${error.message}`);
-
-            if (pageNum === 1) {
-                // Cartas Offline de alta calidad para no dejar el sitio vacío
-                setCards([
-                    {
-                        id: "swsh12pt5-160",
-                        name: "Pikachu VMAX",
-                        set: { name: "Crown Zenith" },
-                        images: { large: "https://images.pokemontcg.io/swsh12pt5/160_hires.png" },
-                        rarity: "Ultra Rare",
-                        tcgplayer: { prices: { holofoil: { market: 250.0 } } }
-                    },
-                    {
-                        id: "cel25-4",
-                        name: "Charizard",
-                        set: { name: "Celebrations" },
-                        images: { large: "https://images.pokemontcg.io/cel25/4_hires.png" },
-                        rarity: "Rare Holo",
-                        tcgplayer: { prices: { holofoil: { market: 85.0 } } }
-                    },
-                    {
-                        id: "swsh10-188",
-                        name: "Origin Forme Dialga VSTAR",
-                        set: { name: "Astral Radiance" },
-                        images: { large: "https://images.pokemontcg.io/swsh10/188_hires.png" },
-                        rarity: "Secret Rare",
-                        cardmarket: { prices: { averageSellPrice: 120.0 } }
-                    }
-                ]);
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Al cambiar filtros o búsqueda, reiniciamos
-    const handleFilterChange = (type: string) => {
-        const newType = selectedType === type ? "" : type; // Toggle
-        setSelectedType(newType);
-        setPage(1);
-        fetchCatalog(searchTerm, 1, newType);
-    };
-
-    // Carga inicial 
-    useEffect(() => {
-        fetchCatalog();
-    }, []);
-
-    const getMarketPrice = (card: any) => {
-        if (!card) return "N/A";
-        const tcg = card.tcgplayer?.prices;
-        const cm = card.cardmarket?.prices;
-
-        try {
-            if (tcg) {
-                const val = tcg.holofoil?.market || tcg.normal?.market || tcg.unlimitedHolofoil?.market || tcg.reverseHolofoil?.market;
-                if (val) return `$${val.toFixed(2)}`;
-            }
-            if (cm) {
-                const val = cm.averageSellPrice || cm.trendPrice || cm.lowPrice;
-                if (val) return `$${val.toFixed(2)}`;
-            }
-        } catch (e) {
-            return "CONSULTAR";
-        }
-        return "CONSULTAR";
-    };
-
-    const mapRarity = (rarity: string): "common" | "rare" | "ultra-rare" | "secret" => {
-        const r = rarity?.toLowerCase() || "";
-        if (r.includes("secret") || r.includes("rainbow") || r.includes("hyper")) return "secret";
-        if (r.includes("vmax") || r.includes("vstar") || r.includes("ultra") || r.includes("v-") || r.includes("full art")) return "ultra-rare";
-        if (r.includes("rare") || r.includes("holo")) return "rare";
-        return "common";
-    };
+export default async function Home() {
+    const initialCards = await getInitialCards();
 
     return (
         <main className="flex flex-col min-h-screen bg-nexus">
@@ -147,11 +65,7 @@ export default function Home() {
                 </div>
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
+                    <div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6 group cursor-default">
                             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-primary transition-colors">
@@ -170,38 +84,10 @@ export default function Home() {
                             Consulta precios reales, rarezas y <span className="text-white font-medium">disponibilidad global</span>.
                         </p>
 
-                        <div className="relative group max-w-md">
-                            <input
-                                type="text"
-                                placeholder="Busca Charizard, Mewtwo, Umbreon..."
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-gray-500 focus:outline-none focus:border-primary/50 transition-all font-medium pr-12"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        setPage(1);
-                                        fetchCatalog(searchTerm, 1);
-                                    }
-                                }}
-                            />
-                            <button
-                                onClick={() => {
-                                    setPage(1);
-                                    fetchCatalog(searchTerm, 1);
-                                }}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition-colors"
-                            >
-                                <Search className="w-5 h-5" />
-                            </button>
-                        </div>
-                    </motion.div>
+                        {/* Search bar is inside CardCatalog component */}
+                    </div>
 
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        transition={{ duration: 1, type: "spring" }}
-                        className="relative flex justify-center lg:justify-end"
-                    >
+                    <div className="relative flex justify-center lg:justify-end">
                         <div className="relative w-[320px] md:w-[450px] aspect-[3/4] animate-float">
                             <div className="absolute inset-0 bg-primary/30 blur-[60px] rounded-[40px] opacity-50" />
                             <div className="absolute inset-0 glass-premium rounded-[32px] p-4 flex flex-col justify-end overflow-hidden group cursor-pointer shadow-2xl">
@@ -222,140 +108,32 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
             </section>
 
             {/* Features Grid */}
             <section className="w-full max-w-7xl mx-auto px-6 py-32 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                 {[
-                    { icon: TrendingUp, title: "Datos Reales", desc: "Sincronizado directamente con la API oficial de Pokémon TCG para precios y specs." },
-                    { icon: ShieldCheck, title: "Filtros Avanzados", desc: "Encuentra cualquier carta por set, rareza o tipo de ataque con precisión quirúrgica." },
-                    { icon: Search, title: "Tendencias Globales", desc: "Visualiza que cartas están subiendo de precio en tiempo real en los mercados internacionales." }
+                    { icon: "📊", title: "Datos Reales", desc: "Sincronizado directamente con la API oficial de Pokémon TCG para precios y specs." },
+                    { icon: "🔍", title: "Filtros Avanzados", desc: "Encuentra cualquier carta por set, rareza o tipo de ataque con precisión quirúrgica." },
+                    { icon: "📈", title: "Tendencias Globales", desc: "Visualiza que cartas están subiendo de precio en tiempo real en los mercados internacionales." }
                 ].map((feature, i) => (
-                    <motion.div
+                    <div
                         key={i}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        viewport={{ once: true }}
                         className="p-10 rounded-[32px] glass hover:border-primary/30 transition-all group"
                     >
-                        <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 group-hover:bg-primary/10 transition-colors">
-                            <feature.icon className="w-7 h-7 text-gray-400 group-hover:text-primary transition-colors" />
+                        <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 group-hover:bg-primary/10 transition-colors text-2xl">
+                            {feature.icon}
                         </div>
                         <h3 className="text-2xl font-bold mb-4 font-display group-hover:text-white transition-colors">{feature.title}</h3>
                         <p className="text-gray-400 leading-relaxed text-sm">{feature.desc}</p>
-                    </motion.div>
+                    </div>
                 ))}
             </section>
 
-            {/* Dynamic Card Gallery Section */}
-            <section className="w-full px-6 py-32 border-t border-white/5 relative bg-black/20 overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                        <div>
-                            <h2 className="text-4xl md:text-5xl font-black mb-4 font-display">
-                                {executedSearchTerm
-                                    ? `RESULTADOS PARA "${executedSearchTerm.toUpperCase()}"`
-                                    : selectedType
-                                        ? `CARTAS TIPO ${selectedType.toUpperCase()}`
-                                        : "CATÁLOGO NEXUS"}
-                            </h2>
-                            <p className="text-gray-400 flex items-center gap-3">
-                                {apiError ? (
-                                    <>
-                                        <span className="text-primary font-bold uppercase tracking-widest text-[10px] bg-primary/10 px-2 py-1 rounded border border-primary/20">{apiError}</span>
-                                        <button
-                                            onClick={() => fetchCatalog(searchTerm, 1)}
-                                            className="text-[10px] text-white hover:text-primary transition-colors underline font-black"
-                                        >
-                                            REINTENTAR CONEXIÓN
-                                        </button>
-                                    </>
-                                ) : "Datos verificados en tiempo real por el Nexus."}
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
-                            <Link href="/marketplace" className="px-6 py-2 rounded-full border border-white/10 text-sm font-bold text-gray-400 hover:text-primary hover:border-primary/50 transition-all flex items-center gap-2 group">
-                                Ver Catálogo Completo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                        </div>
-                    </div>
-
-                    {/* Type Filter Bar */}
-                    <div className="flex flex-wrap gap-3 mb-12">
-                        {POKEMON_TYPES.map((type) => (
-                            <button
-                                key={type}
-                                onClick={() => handleFilterChange(type)}
-                                className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${selectedType === type
-                                    ? "bg-primary text-nexus border-primary shadow-[0_0_20px_rgba(0,184,212,0.4)]"
-                                    : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:bg-white/10"
-                                    }`}
-                            >
-                                {type}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 min-h-[400px]">
-                        <AnimatePresence mode="popLayout">
-                            {cards && cards.length > 0 && cards.map((card, i) => (
-                                <motion.div
-                                    key={card.id || i}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.4, delay: i * 0.05 }}
-                                >
-                                    <InteractiveCard
-                                        id={card.id}
-                                        name={card.name || "Unknown"}
-                                        set={card.set?.name || "Unknown Set"}
-                                        price={getMarketPrice(card)}
-                                        imageUrl={card.images?.large || card.images?.small || ""}
-                                        rarity={mapRarity(card.rarity)}
-                                    />
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
-
-                        {!isLoading && (!cards || cards.length === 0) && (
-                            <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
-                                <Search className="w-12 h-12 mb-4 opacity-20" />
-                                <p className="text-xl font-display uppercase tracking-widest">No se encontraron cartas</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {cards && cards.length > 0 && cards.length % 12 === 0 && (
-                        <div className="mt-20 flex justify-center">
-                            <button
-                                onClick={() => {
-                                    const nextPage = page + 1;
-                                    setPage(nextPage);
-                                    fetchCatalog(executedSearchTerm, nextPage);
-                                }}
-                                disabled={isLoading}
-                                className="px-12 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-primary/20 hover:border-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed group flex items-center gap-4"
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                    <>
-                                        Cargar más cartas <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </section>
+            {/* Card Catalog - Client Component with server-fetched initial data */}
+            <CardCatalog initialCards={initialCards} />
         </main>
     );
 }
