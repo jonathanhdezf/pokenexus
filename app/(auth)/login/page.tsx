@@ -17,6 +17,7 @@ export default function LoginPage() {
     const [isMuted, setIsMuted] = useState(true);
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const sfxRef = useRef<HTMLAudioElement | null>(null);
 
     // Initial audio setup
     useEffect(() => {
@@ -56,6 +57,11 @@ export default function LoginPage() {
             if (res?.error) {
                 setError("Credenciales inválidas. Intenta de nuevo.");
             } else {
+                // Play catch sound
+                if (sfxRef.current) {
+                    sfxRef.current.volume = 0.5;
+                    sfxRef.current.play().catch(() => { });
+                }
                 router.push("/marketplace");
                 router.refresh();
             }
@@ -74,6 +80,11 @@ export default function LoginPage() {
                 src="https://ia800109.us.archive.org/27/items/Pokemon-Opening/01%20Pokemon%20Theme.mp3"
                 className="hidden"
                 muted={isMuted}
+            />
+            <audio
+                ref={sfxRef}
+                src="https://www.myinstants.com/media/sounds/pokeball-catch.mp3"
+                className="hidden"
             />
 
             {/* Music Toggle Button */}
