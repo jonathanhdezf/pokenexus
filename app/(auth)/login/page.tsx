@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Loader2, ArrowRight, Eye, EyeOff, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, ArrowRight, Eye, EyeOff, Zap, Volume2, VolumeX, Music } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -14,6 +14,32 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [isMuted, setIsMuted] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Initial audio setup
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = 0.3;
+            audioRef.current.loop = true;
+        }
+    }, []);
+
+    const toggleMusic = () => {
+        if (!audioRef.current) return;
+
+        if (isMuted) {
+            audioRef.current.muted = false;
+            audioRef.current.play().catch(e => console.log("Autoplay prevented", e));
+            setIsMuted(false);
+            setIsPlaying(true);
+        } else {
+            audioRef.current.muted = true;
+            setIsMuted(true);
+            setIsPlaying(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,6 +68,78 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-nexus relative overflow-hidden">
+            {/* Audio Element */}
+            <audio
+                ref={audioRef}
+                src="https://ia800109.us.archive.org/27/items/Pokemon-Opening/01%20Pokemon%20Theme.mp3"
+                className="hidden"
+                muted={isMuted}
+            />
+
+            {/* Music Toggle Button */}
+            <div className="fixed top-8 right-8 z-[100] flex items-center gap-4">
+                <AnimatePresence>
+                    {isPlaying && (
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            className="bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl flex items-center gap-3"
+                        >
+                            <div className="flex gap-1 items-end h-3">
+                                {[1, 2, 3, 4].map(i => (
+                                    <motion.div
+                                        key={i}
+                                        className="w-0.5 bg-primary"
+                                        animate={{ height: ["20%", "100%", "20%"] }}
+                                        transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
+                                    />
+                                ))}
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Pokémon Theme</span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={toggleMusic}
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border overflow-hidden relative ${isMuted
+                        ? "bg-white/5 border-white/10 text-gray-400"
+                        : "bg-primary/20 border-primary/30 text-primary shadow-[0_0_20px_rgba(0,242,255,0.2)]"
+                        }`}
+                >
+                    <AnimatePresence mode="wait">
+                        {isMuted ? (
+                            <motion.div
+                                key="muted"
+                                initial={{ opacity: 0, rotate: -45 }}
+                                animate={{ opacity: 1, rotate: 0 }}
+                                exit={{ opacity: 0, rotate: 45 }}
+                            >
+                                <VolumeX className="w-5 h-5" />
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="unmuted"
+                                initial={{ opacity: 0, rotate: -45 }}
+                                animate={{ opacity: 1, rotate: 0 }}
+                                exit={{ opacity: 0, rotate: 45 }}
+                            >
+                                <Volume2 className="w-5 h-5" />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                    {!isMuted && (
+                        <motion.div
+                            className="absolute inset-0 bg-primary/10"
+                            animate={{ opacity: [0, 0.4, 0] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                        />
+                    )}
+                </motion.button>
+            </div>
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/8 blur-[180px] rounded-full" />
