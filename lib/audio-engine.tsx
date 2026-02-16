@@ -70,31 +70,18 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const playSFX = (url: string, volume: number = 0.5) => {
-        // Fallback to Synthetic 8-bit sounds if local files fail or for immediate response
         const ctx = audioCtxRef.current;
         if (ctx && ctx.state === "suspended") {
             unlockAudio();
         }
 
-        if (url.includes("login-success")) {
-            playSyntheticSuccess();
-            return;
-        }
-        if (url.includes("catch")) {
-            playSyntheticCatch();
-            return;
-        }
-        if (url.includes("throw")) {
-            playSyntheticThrow();
-            return;
-        }
-
         const audio = new Audio(url);
         audio.volume = volume;
         audio.play().catch(err => {
-            console.log("SFX Playback failed, falling back to synthetic", err);
-            if (url.includes("success")) playSyntheticSuccess();
+            console.log(`SFX ${url} failed, using synthetic fallback`, err);
+            if (url.includes("login-success")) playSyntheticSuccess();
             if (url.includes("catch")) playSyntheticCatch();
+            if (url.includes("throw")) playSyntheticThrow();
         });
     };
 
@@ -191,13 +178,31 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
     const playTheme = () => {
         setIsThemePlaying(true);
-        setTimeout(() => {
+        const ctx = audioCtxRef.current;
+        if (ctx && ctx.state === "suspended") {
+            unlockAudio();
+        }
+
+        // Try playing local file first
+        const audio = new Audio("/audio/pallet-town.mp3");
+        audio.loop = true;
+        audio.volume = 0.5;
+        audio.play().catch(err => {
+            console.log("Local theme failed, playing synthetic", err);
             playSyntheticTheme();
-        }, 50);
+        });
+
+        // Store reference to stop it later if needed (though stopTheme handles oscillators)
+        const stopListener = () => {
+            audio.pause();
+            audio.removeEventListener('stopTheme', stopListener);
+        };
+        window.addEventListener('stopTheme' as any, stopListener);
     };
 
     const stopTheme = () => {
         setIsThemePlaying(false);
+        window.dispatchEvent(new CustomEvent('stopTheme'));
         if (loopTimeoutRef.current) {
             clearTimeout(loopTimeoutRef.current);
             loopTimeoutRef.current = null;
