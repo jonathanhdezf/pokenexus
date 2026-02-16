@@ -59,11 +59,10 @@ export default function StreamingPage() {
                 >
                     {/* The Iframe with Specific Latam Channel requested by User */}
                     <iframe
-                        src="https://pluto.tv/latam/live-tv/6870072ca9d5c45c3e9466f1/embed?autoplay=true"
+                        src="https://pluto.tv/latam/live-tv/6870072ca9d5c45c3e9466f1?msockid=0c2e9bd020c663e914428d3d21596216"
                         className="absolute inset-0 w-full h-full border-none z-0"
                         allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen; volume"
                         allowFullScreen
-                        loading="lazy"
                     ></iframe>
 
                     {/* Theater Mode Exit Button - Placed inside a safe container to not block video controls */}
