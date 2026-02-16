@@ -2,7 +2,10 @@ import Link from "next/link";
 import { ArrowRight, Search, TrendingUp, ShieldCheck } from "lucide-react";
 import CardCatalog from "@/components/CardCatalog";
 
-// Función que corre en el SERVIDOR (no en el navegador del usuario)
+// Forzar renderizado dinámico - NUNCA generar estáticamente en build
+export const dynamic = "force-dynamic";
+
+// Función que corre en el SERVIDOR en cada visita (no durante el build)
 // Trae 150 cartas en 3 peticiones paralelas de 50 para máxima velocidad
 async function getInitialCards() {
     const headers = {
@@ -14,9 +17,9 @@ async function getInitialCards() {
     try {
         // 3 páginas en paralelo = 150 cartas
         const [res1, res2, res3] = await Promise.all([
-            fetch(`${baseUrl}&page=1`, { headers, next: { revalidate: 300 } }),
-            fetch(`${baseUrl}&page=2`, { headers, next: { revalidate: 300 } }),
-            fetch(`${baseUrl}&page=3`, { headers, next: { revalidate: 300 } }),
+            fetch(`${baseUrl}&page=1`, { headers, cache: 'no-store' }),
+            fetch(`${baseUrl}&page=2`, { headers, cache: 'no-store' }),
+            fetch(`${baseUrl}&page=3`, { headers, cache: 'no-store' }),
         ]);
 
         const results = await Promise.all([
