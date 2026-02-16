@@ -36,43 +36,122 @@ export default async function Home() {
         <main className="flex flex-col min-h-screen bg-nexus">
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
+                {/* Background Decorations */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                    <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full animate-pulse-glow" />
-                    <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-legendary/10 blur-[120px] rounded-full animate-pulse-glow" />
+                    <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] bg-primary/10 blur-[150px] rounded-full animate-pulse-glow" />
+                    <div className="absolute bottom-[0%] right-[-5%] w-[50%] h-[50%] bg-legendary/10 blur-[130px] rounded-full animate-pulse-glow" />
+
+                    {/* Subtle Scanlines/Grid */}
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.02),rgba(0,0,255,0.02))] z-0 bg-[length:100%_4px,3px_100%] pointer-events-none opacity-20" />
+
+                    {/* Floating Background Pokémon */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -100, rotate: -10 }}
+                        animate={{ opacity: 0.15, x: 0, rotate: 0 }}
+                        transition={{ duration: 1.5, delay: 0.5 }}
+                        className="absolute top-40 left-[-5%] hidden xl:block"
+                    >
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png" alt="" className="w-96 h-96 grayscale hover:grayscale-0 transition-all duration-1000" />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, x: 100, rotate: 20 }}
+                        animate={{ opacity: 0.1, x: 0, rotate: 10 }}
+                        transition={{ duration: 1.5, delay: 0.8 }}
+                        className="absolute bottom-20 right-[5%] hidden xl:block"
+                    >
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png" alt="" className="w-80 h-80 grayscale" />
+                    </motion.div>
+
+                    {/* Floating Items */}
+                    <div className="absolute inset-0">
+                        {[
+                            { id: 1, x: '15%', y: '20%', icon: 'master-ball', delay: 0 },
+                            { id: 2, x: '85%', y: '15%', icon: 'ultra-ball', delay: 2 },
+                            { id: 3, x: '10%', y: '80%', icon: 'rare-candy', delay: 1 },
+                            { id: 4, x: '90%', y: '70%', icon: 'exp-share', delay: 3 },
+                            { id: 5, x: '50%', y: '10%', icon: 'poke-ball', delay: 4 },
+                        ].map((item) => (
+                            <motion.img
+                                key={item.id}
+                                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${item.icon}.png`}
+                                alt=""
+                                className="absolute w-8 h-8 opacity-20"
+                                style={{ left: item.x, top: item.y }}
+                                animate={{
+                                    y: [0, -20, 0],
+                                    rotate: [0, 360],
+                                    opacity: [0.1, 0.3, 0.1]
+                                }}
+                                transition={{
+                                    duration: 5,
+                                    delay: item.delay,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
+                            />
+                        ))}
+                    </div>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6 group cursor-default">
-                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 mb-8 blur-none hover:border-primary/30 transition-all group cursor-default"
+                        >
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/amulet-coin.png" alt="" className="w-5 h-5" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-primary transition-colors">
-                                Marketplace Tiempo Real
+                                Marketplace Tiempo Real • Beta v2.5
                             </span>
-                        </div>
+                        </motion.div>
 
-                        <h1 className="text-6xl md:text-8xl font-black font-display leading-[0.9] mb-8">
+                        <motion.h1
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-6xl md:text-8xl font-black font-display leading-[0.9] mb-8"
+                        >
                             EL NEXUS <br />
                             <span className="text-holographic animate-shimmer">PREMIUM</span> <br />
                             <span className="text-white">DE TCG.</span>
-                        </h1>
+                        </motion.h1>
 
-                        <p className="text-xl text-gray-400 mb-10 max-w-lg leading-relaxed">
+                        <motion.p
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-xl text-gray-400 mb-10 max-w-lg leading-relaxed"
+                        >
                             Accede a la base de datos más grande del mundo. <br className="hidden md:block" />
                             Consulta precios reales, rarezas y <span className="text-white font-medium">disponibilidad global</span>.
-                        </p>
+                        </motion.p>
 
-                        <a
-                            href="#catalog-section"
-                            className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-nexus font-black uppercase tracking-widest text-sm hover:bg-primary/80 transition-all group"
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
                         >
-                            Explorar Catálogo <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                        </a>
+                            <a
+                                href="#catalog-section"
+                                className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-nexus font-black uppercase tracking-widest text-sm hover:bg-primary/80 transition-all group shadow-xl shadow-primary/20"
+                            >
+                                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="" className="w-5 h-5" />
+                                Explorar Catálogo <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                            </a>
+                        </motion.div>
                     </div>
 
-                    <div className="relative flex justify-center lg:justify-end">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="relative flex justify-center lg:justify-end"
+                    >
                         <div className="relative w-[320px] md:w-[450px] aspect-[3/4] animate-float">
                             <div className="absolute inset-0 bg-primary/30 blur-[60px] rounded-[40px] opacity-50" />
-                            <div className="absolute inset-0 glass-premium rounded-[32px] p-4 flex flex-col justify-end overflow-hidden group cursor-pointer shadow-2xl">
+                            <div className="absolute inset-0 glass-premium rounded-[32px] p-4 flex flex-col justify-end overflow-hidden group cursor-pointer shadow-2xl border border-white/10">
                                 <div className="absolute inset-0 bg-[url('https://images.pokemontcg.io/swsh12pt5/160_hires.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                                 <div className="relative z-10 flex justify-between items-end">
@@ -90,7 +169,7 @@ export default async function Home() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
