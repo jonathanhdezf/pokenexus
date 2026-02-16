@@ -48,9 +48,9 @@ export default async function AuctionDetailPage({ params }: { params: { id: stri
                 endsAt={listing.endsAt!.toISOString()}
                 card={{
                     name: listing.card.name,
-                    imageUrl: cardImage,
+                    imageUrl: cardImage || "",
                     set: listing.card.set,
-                    rarity: listing.card.rarity,
+                    rarity: listing.card.rarity || "Unknown",
                     condition: listing.condition
                 }}
             />
