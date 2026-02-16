@@ -9,44 +9,57 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                background: "#0a0a0a",
-                surface: "#1a1a1a",
-                surfaceHighlight: "#2a2a2a",
-                primary: "#00c6ff",
-                secondary: "#9d00ff",
-                accent: "#ff007a",
-                "gold": "#ffd700",
-                "silver": "#c0c0c0",
-                "bronze": "#cd7f32",
+                background: "#050608",
+                surface: "#0f1115",
+                surfaceHighlight: "#16191f",
+                primary: {
+                    DEFAULT: "#00f2ff", // Electric Cyan
+                    dark: "#00a3ff",
+                    light: "#70ffff",
+                },
+                secondary: {
+                    DEFAULT: "#ff0055", // Crimson/Legendary Red
+                    dark: "#990033",
+                },
+                legendary: "#7d40ff", // Dark Indigo/Psychic
+                premium: {
+                    gold: "#d4af37",
+                    silver: "#a8a9ad",
+                    holographic: "#00f2ff",
+                },
+                success: "#00ff88",
             },
             fontFamily: {
                 sans: ["var(--font-inter)", "sans-serif"],
                 display: ["var(--font-outfit)", "sans-serif"],
             },
             backgroundImage: {
-                "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-                "gradient-conic":
-                    "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-                "holo-foil": "linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.4) 25%, transparent 30%, transparent 45%, rgba(255,255,255,0.4) 50%, transparent 55%, transparent 70%, rgba(255,255,255,0.4) 75%, transparent 80%)",
-                "rainbow-gradient": "linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3)",
+                "premium-gradient": "linear-gradient(135deg, #050608 0%, #16191f 100%)",
+                "holo-card": "linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.4) 60%, transparent 80%)",
+                "holographic": "linear-gradient(135deg, #00f2ff 0%, #7d40ff 50%, #ff0055 100%)",
             },
             dropShadow: {
-                "glow": "0 0 10px rgba(0, 198, 255, 0.5)",
-                "glow-gold": "0 0 15px rgba(255, 215, 0, 0.6)",
-                "xl": "0 20px 25px rgba(0, 0, 0, 0.5)",
+                "glow": "0 0 15px rgba(0, 242, 255, 0.4)",
+                "glow-red": "0 0 15px rgba(255, 0, 85, 0.4)",
+                "glow-gold": "0 0 20px rgba(212, 175, 55, 0.5)",
             },
             animation: {
-                "holofoil": "holofoil 3s ease infinite",
-                "fade-in-up": "fade-in-up 0.5s ease-out forwards",
+                "float": "float 6s ease-in-out infinite",
+                "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+                "shimmer": "shimmer 3s infinite",
             },
             keyframes: {
-                holofoil: {
-                    "0%, 100%": { backgroundPosition: "0% 50%" },
-                    "50%": { backgroundPosition: "100% 50%" },
+                float: {
+                    "0%, 100%": { transform: "translateY(0)" },
+                    "50%": { transform: "translateY(-20px)" },
                 },
-                "fade-in-up": {
-                    "0%": { opacity: "0", transform: "translateY(20px)" },
-                    "100%": { opacity: "1", transform: "translateY(0)" },
+                "pulse-glow": {
+                    "0%, 100%": { transform: "scale(1)", opacity: "0.5" },
+                    "50%": { transform: "scale(1.05)", opacity: "0.8" },
+                },
+                shimmer: {
+                    "0%": { backgroundPosition: "-200% 0" },
+                    "100%": { backgroundPosition: "200% 0" },
                 },
             },
         },
