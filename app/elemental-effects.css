@@ -1,0 +1,1096 @@
+/* ============================================
+   ELEMENTAL TYPE EFFECTS — Card Detail Modal
+   ============================================ */
+
+/* Base container for effects */
+.elemental-border {
+    position: relative;
+}
+
+.elemental-border::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 20px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ---- FIRE EFFECT ---- */
+.elemental-fire::before {
+    background: linear-gradient(45deg, #ff4500, #ff8c00, #ff4500, #ffd700, #ff4500);
+    background-size: 300% 300%;
+    animation: fireShift 2s ease infinite;
+    filter: blur(6px);
+    opacity: 0.7;
+}
+
+.elemental-fire::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 24px;
+    background: radial-gradient(ellipse at 50% 100%, rgba(255, 69, 0, 0.4), transparent 60%);
+    animation: firePulse 1.5s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes fireShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes firePulse {
+    0% {
+        opacity: 0.4;
+        transform: scaleY(1);
+    }
+
+    100% {
+        opacity: 0.8;
+        transform: scaleY(1.05);
+    }
+}
+
+/* Fire particles */
+.fire-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffdd00, #ff6600);
+    pointer-events: none;
+    z-index: 1;
+    animation: fireFloat 1.8s ease-out infinite;
+}
+
+.fire-particle:nth-child(1) {
+    left: 10%;
+    bottom: 0;
+    animation-delay: 0s;
+}
+
+.fire-particle:nth-child(2) {
+    left: 30%;
+    bottom: 0;
+    animation-delay: 0.3s;
+    animation-duration: 2s;
+}
+
+.fire-particle:nth-child(3) {
+    left: 50%;
+    bottom: 0;
+    animation-delay: 0.6s;
+    animation-duration: 1.6s;
+}
+
+.fire-particle:nth-child(4) {
+    left: 70%;
+    bottom: 0;
+    animation-delay: 0.2s;
+    animation-duration: 2.2s;
+}
+
+.fire-particle:nth-child(5) {
+    left: 85%;
+    bottom: 0;
+    animation-delay: 0.5s;
+    animation-duration: 1.9s;
+}
+
+.fire-particle:nth-child(6) {
+    left: 20%;
+    bottom: 0;
+    animation-delay: 0.8s;
+    animation-duration: 1.5s;
+}
+
+.fire-particle:nth-child(7) {
+    left: 60%;
+    bottom: 0;
+    animation-delay: 1.1s;
+    animation-duration: 2.1s;
+}
+
+.fire-particle:nth-child(8) {
+    left: 90%;
+    bottom: 0;
+    animation-delay: 0.4s;
+    animation-duration: 1.7s;
+}
+
+@keyframes fireFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-40px) translateX(5px) scale(0.8);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateY(-80px) translateX(-3px) scale(0);
+        opacity: 0;
+    }
+}
+
+
+/* ---- LIGHTNING EFFECT ---- */
+.elemental-lightning::before {
+    background: linear-gradient(90deg, transparent, #ffd700, transparent, #fff176, transparent);
+    background-size: 400% 100%;
+    animation: lightningFlash 3s step-end infinite;
+    filter: blur(4px);
+    opacity: 0.5;
+}
+
+.elemental-lightning::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    animation: lightningBorder 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes lightningFlash {
+
+    0%,
+    89% {
+        opacity: 0.2;
+        background-position: 0% 0%;
+    }
+
+    90% {
+        opacity: 1;
+        background-position: 100% 0%;
+    }
+
+    91% {
+        opacity: 0.1;
+    }
+
+    93% {
+        opacity: 0.9;
+        background-position: 50% 0%;
+    }
+
+    94% {
+        opacity: 0.1;
+    }
+
+    95% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
+}
+
+@keyframes lightningBorder {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.2);
+    }
+}
+
+/* Lightning bolt SVG paths */
+.lightning-bolt {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    animation: boltFlash 3s ease infinite;
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
+}
+
+.lightning-bolt:nth-child(1) {
+    top: -10px;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.lightning-bolt:nth-child(2) {
+    top: 10%;
+    right: -10px;
+    animation-delay: 1s;
+    transform: rotate(90deg);
+}
+
+.lightning-bolt:nth-child(3) {
+    bottom: -10px;
+    left: 60%;
+    animation-delay: 0.5s;
+    transform: rotate(180deg);
+}
+
+.lightning-bolt:nth-child(4) {
+    top: 40%;
+    left: -10px;
+    animation-delay: 1.5s;
+    transform: rotate(-90deg);
+}
+
+@keyframes boltFlash {
+
+    0%,
+    85%,
+    100% {
+        opacity: 0;
+    }
+
+    87% {
+        opacity: 1;
+    }
+
+    88% {
+        opacity: 0.1;
+    }
+
+    90% {
+        opacity: 0.9;
+    }
+
+    92% {
+        opacity: 0;
+    }
+}
+
+
+/* ---- WATER EFFECT ---- */
+.elemental-water::before {
+    background: linear-gradient(45deg, #0077be, #00bfff, #0077be, #87ceeb, #0077be);
+    background-size: 300% 300%;
+    animation: waterFlow 3s ease infinite;
+    filter: blur(6px);
+    opacity: 0.5;
+}
+
+.elemental-water::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 22px;
+    border: 2px solid rgba(0, 191, 255, 0.2);
+    animation: waterRipple 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes waterFlow {
+    0% {
+        background-position: 0% 100%;
+    }
+
+    50% {
+        background-position: 100% 0%;
+    }
+
+    100% {
+        background-position: 0% 100%;
+    }
+}
+
+@keyframes waterRipple {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.02);
+        opacity: 0.2;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+}
+
+/* Water bubbles */
+.water-bubble {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(135, 206, 235, 0.6);
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent);
+    pointer-events: none;
+    z-index: 1;
+    animation: bubbleRise 3s ease-in infinite;
+}
+
+.water-bubble:nth-child(1) {
+    width: 8px;
+    height: 8px;
+    left: 15%;
+    bottom: -5px;
+    animation-delay: 0s;
+}
+
+.water-bubble:nth-child(2) {
+    width: 5px;
+    height: 5px;
+    left: 35%;
+    bottom: -5px;
+    animation-delay: 0.5s;
+    animation-duration: 3.5s;
+}
+
+.water-bubble:nth-child(3) {
+    width: 10px;
+    height: 10px;
+    left: 55%;
+    bottom: -5px;
+    animation-delay: 1s;
+    animation-duration: 2.8s;
+}
+
+.water-bubble:nth-child(4) {
+    width: 6px;
+    height: 6px;
+    left: 75%;
+    bottom: -5px;
+    animation-delay: 1.5s;
+    animation-duration: 3.2s;
+}
+
+.water-bubble:nth-child(5) {
+    width: 7px;
+    height: 7px;
+    left: 45%;
+    bottom: -5px;
+    animation-delay: 0.8s;
+    animation-duration: 4s;
+}
+
+.water-bubble:nth-child(6) {
+    width: 4px;
+    height: 4px;
+    left: 88%;
+    bottom: -5px;
+    animation-delay: 2s;
+    animation-duration: 2.6s;
+}
+
+@keyframes bubbleRise {
+    0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.8;
+    }
+
+    30% {
+        transform: translateY(-40px) translateX(8px) scale(1.1);
+        opacity: 0.6;
+    }
+
+    60% {
+        transform: translateY(-100px) translateX(-5px) scale(0.9);
+        opacity: 0.4;
+    }
+
+    100% {
+        transform: translateY(-160px) translateX(3px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+
+/* ---- GRASS EFFECT ---- */
+.elemental-grass::before {
+    background: linear-gradient(135deg, #228b22, #32cd32, #228b22, #7cfc00, #228b22);
+    background-size: 300% 300%;
+    animation: grassSway 4s ease infinite;
+    filter: blur(6px);
+    opacity: 0.5;
+}
+
+@keyframes grassSway {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    33% {
+        background-position: 100% 0%;
+    }
+
+    66% {
+        background-position: 50% 100%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Floating leaves */
+.grass-leaf {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    z-index: 1;
+    animation: leafFloat 4s ease-in-out infinite;
+    color: #32cd32;
+    font-size: 14px;
+}
+
+.grass-leaf:nth-child(1) {
+    top: -5px;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.grass-leaf:nth-child(2) {
+    top: 20%;
+    right: -5px;
+    animation-delay: 0.8s;
+    animation-duration: 3.5s;
+}
+
+.grass-leaf:nth-child(3) {
+    bottom: -5px;
+    left: 40%;
+    animation-delay: 1.6s;
+    animation-duration: 4.5s;
+}
+
+.grass-leaf:nth-child(4) {
+    top: 50%;
+    left: -5px;
+    animation-delay: 0.4s;
+    animation-duration: 3.8s;
+}
+
+.grass-leaf:nth-child(5) {
+    top: 80%;
+    right: -5px;
+    animation-delay: 2s;
+    animation-duration: 3.2s;
+}
+
+.grass-leaf:nth-child(6) {
+    top: -5px;
+    left: 70%;
+    animation-delay: 1.2s;
+    animation-duration: 5s;
+}
+
+@keyframes leafFloat {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0.8;
+    }
+
+    25% {
+        transform: translateY(-15px) translateX(10px) rotate(45deg) scale(1.1);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: translateY(-5px) translateX(-8px) rotate(90deg) scale(0.9);
+        opacity: 0.7;
+    }
+
+    75% {
+        transform: translateY(-20px) translateX(5px) rotate(135deg) scale(1.05);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(0) rotate(180deg) scale(1);
+        opacity: 0.8;
+    }
+}
+
+
+/* ---- PSYCHIC EFFECT ---- */
+.elemental-psychic::before {
+    background: conic-gradient(from 0deg, #9b59b6, #e74c88, #9b59b6, #7c3aed, #9b59b6);
+    animation: psychicSpin 4s linear infinite;
+    filter: blur(8px);
+    opacity: 0.45;
+}
+
+@keyframes psychicSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Psychic rings */
+.psychic-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 22px;
+    border: 1.5px solid rgba(155, 89, 182, 0.3);
+    pointer-events: none;
+    z-index: 1;
+    animation: psychicPulseRing 2s ease-out infinite;
+}
+
+.psychic-ring:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.psychic-ring:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.psychic-ring:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes psychicPulseRing {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1.08);
+        opacity: 0;
+    }
+}
+
+/* Psychic orbs */
+.psychic-orb {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #e74c88, #9b59b6);
+    pointer-events: none;
+    z-index: 1;
+    animation: orbOrbit 3s linear infinite;
+}
+
+.psychic-orb:nth-child(4) {
+    animation-delay: 0s;
+}
+
+.psychic-orb:nth-child(5) {
+    animation-delay: 1s;
+}
+
+.psychic-orb:nth-child(6) {
+    animation-delay: 2s;
+}
+
+@keyframes orbOrbit {
+    0% {
+        top: 50%;
+        left: -8px;
+        opacity: 0.8;
+    }
+
+    25% {
+        top: -8px;
+        left: 50%;
+        opacity: 0.6;
+    }
+
+    50% {
+        top: 50%;
+        right: -8px;
+        left: auto;
+        opacity: 0.8;
+    }
+
+    75% {
+        top: calc(100% + 8px);
+        left: 50%;
+        opacity: 0.6;
+    }
+
+    100% {
+        top: 50%;
+        left: -8px;
+        opacity: 0.8;
+    }
+}
+
+
+/* ---- DARKNESS EFFECT ---- */
+.elemental-darkness::before {
+    background: radial-gradient(circle, #1a1a2e, #16213e, #0f0f23);
+    animation: darkPulse 3s ease infinite;
+    filter: blur(8px);
+    opacity: 0.6;
+}
+
+.elemental-darkness::after {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    border-radius: 28px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(75, 0, 130, 0.2), transparent 70%);
+    animation: shadowExpand 2s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes darkPulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes shadowExpand {
+    0% {
+        transform: scale(1);
+        filter: blur(8px);
+    }
+
+    100% {
+        transform: scale(1.05);
+        filter: blur(12px);
+    }
+}
+
+/* Dark wisps */
+.dark-wisp {
+    position: absolute;
+    width: 20px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(75, 0, 130, 0.5), transparent);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 1;
+    animation: wispFloat 3s ease infinite;
+}
+
+.dark-wisp:nth-child(1) {
+    top: 20%;
+    left: -15px;
+    animation-delay: 0s;
+}
+
+.dark-wisp:nth-child(2) {
+    top: 50%;
+    right: -15px;
+    animation-delay: 0.7s;
+    animation-duration: 3.5s;
+}
+
+.dark-wisp:nth-child(3) {
+    bottom: 20%;
+    left: -15px;
+    animation-delay: 1.4s;
+    animation-duration: 2.8s;
+}
+
+.dark-wisp:nth-child(4) {
+    top: 70%;
+    right: -15px;
+    animation-delay: 0.3s;
+    animation-duration: 4s;
+}
+
+@keyframes wispFloat {
+    0% {
+        transform: translateX(0) scaleX(1);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translateX(30px) scaleX(1.5);
+        opacity: 0.4;
+    }
+
+    80% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateX(0) scaleX(1);
+        opacity: 0;
+    }
+}
+
+
+/* ---- DRAGON EFFECT ---- */
+.elemental-dragon::before {
+    background: conic-gradient(from 0deg, #ff6600, #4169e1, #ffd700, #9333ea, #ff6600);
+    background-size: 100% 100%;
+    animation: dragonShift 3s linear infinite;
+    filter: blur(6px);
+    opacity: 0.5;
+}
+
+@keyframes dragonShift {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Dragon energy */
+.dragon-energy {
+    position: absolute;
+    width: 4px;
+    height: 12px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 1;
+    animation: dragonSpiral 2s ease-in-out infinite;
+}
+
+.dragon-energy:nth-child(1) {
+    background: #ff6600;
+    top: 0;
+    left: 30%;
+    animation-delay: 0s;
+}
+
+.dragon-energy:nth-child(2) {
+    background: #4169e1;
+    top: 30%;
+    right: 0;
+    animation-delay: 0.3s;
+}
+
+.dragon-energy:nth-child(3) {
+    background: #ffd700;
+    bottom: 0;
+    left: 60%;
+    animation-delay: 0.6s;
+}
+
+.dragon-energy:nth-child(4) {
+    background: #9333ea;
+    top: 60%;
+    left: 0;
+    animation-delay: 0.9s;
+}
+
+@keyframes dragonSpiral {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(180deg) scale(1.3);
+        opacity: 0.6;
+    }
+
+    70% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-40px) rotate(360deg) scale(0);
+        opacity: 0;
+    }
+}
+
+
+/* ---- FIGHTING EFFECT ---- */
+.elemental-fighting::before {
+    background: linear-gradient(135deg, #c2410c, #ea580c, #c2410c, #b91c1c, #c2410c);
+    background-size: 200% 200%;
+    animation: fightPulse 1.5s ease infinite;
+    filter: blur(5px);
+    opacity: 0.5;
+}
+
+@keyframes fightPulse {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+        opacity: 0.3;
+    }
+
+    50% {
+        background-position: 100% 50%;
+        opacity: 0.6;
+    }
+}
+
+/* Impact marks */
+.fight-impact {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    animation: impactFlash 2s ease infinite;
+}
+
+.fight-impact:nth-child(1) {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.fight-impact:nth-child(2) {
+    top: 5%;
+    right: 20%;
+    animation-delay: 0.6s;
+}
+
+.fight-impact:nth-child(3) {
+    bottom: 15%;
+    left: 30%;
+    animation-delay: 1.2s;
+}
+
+.fight-impact:nth-child(4) {
+    bottom: 5%;
+    right: 10%;
+    animation-delay: 0.3s;
+}
+
+@keyframes impactFlash {
+
+    0%,
+    80%,
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    85% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    90% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    92% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    95% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+
+/* ---- METAL EFFECT ---- */
+.elemental-metal::before {
+    background: linear-gradient(110deg, #71717a, #a1a1aa, #d4d4d8, #a1a1aa, #71717a);
+    background-size: 200% 100%;
+    animation: metalShine 3s ease infinite;
+    filter: blur(5px);
+    opacity: 0.4;
+}
+
+.elemental-metal::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(161, 161, 170, 0.3);
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: metalSweep 2.5s ease infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes metalShine {
+    0% {
+        background-position: 200% 0%;
+    }
+
+    100% {
+        background-position: -200% 0%;
+    }
+}
+
+@keyframes metalSweep {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+
+/* ---- FAIRY EFFECT ---- */
+.elemental-fairy::before {
+    background: linear-gradient(135deg, #ec4899, #f9a8d4, #ec4899, #c084fc, #ec4899);
+    background-size: 300% 300%;
+    animation: fairyShimmer 3s ease infinite;
+    filter: blur(6px);
+    opacity: 0.45;
+}
+
+@keyframes fairyShimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Fairy sparkles */
+.fairy-sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    pointer-events: none;
+    z-index: 1;
+    animation: sparkleGlitter 2s ease infinite;
+}
+
+.fairy-sparkle::before,
+.fairy-sparkle::after {
+    content: "";
+    position: absolute;
+    background: #f472b6;
+    border-radius: 1px;
+}
+
+.fairy-sparkle::before {
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.fairy-sparkle::after {
+    width: 2px;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.fairy-sparkle:nth-child(1) {
+    top: 5%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.fairy-sparkle:nth-child(2) {
+    top: 20%;
+    right: 10%;
+    animation-delay: 0.4s;
+}
+
+.fairy-sparkle:nth-child(3) {
+    bottom: 25%;
+    left: 5%;
+    animation-delay: 0.8s;
+}
+
+.fairy-sparkle:nth-child(4) {
+    top: 60%;
+    right: 5%;
+    animation-delay: 1.2s;
+}
+
+.fairy-sparkle:nth-child(5) {
+    bottom: 10%;
+    left: 50%;
+    animation-delay: 0.2s;
+}
+
+.fairy-sparkle:nth-child(6) {
+    top: 40%;
+    left: 8%;
+    animation-delay: 1.6s;
+}
+
+.fairy-sparkle:nth-child(7) {
+    top: 10%;
+    right: 40%;
+    animation-delay: 0.6s;
+}
+
+.fairy-sparkle:nth-child(8) {
+    bottom: 5%;
+    right: 25%;
+    animation-delay: 1s;
+}
+
+@keyframes sparkleGlitter {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(0deg);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1) rotate(90deg);
+    }
+}
+
+
+/* ---- COLORLESS EFFECT ---- */
+.elemental-colorless::before {
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    background-size: 200% 100%;
+    animation: colorlessSweep 3s ease infinite;
+    filter: blur(4px);
+    opacity: 0.3;
+}
+
+@keyframes colorlessSweep {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}

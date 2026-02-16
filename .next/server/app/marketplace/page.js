@@ -23,4 +23,4 @@
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */let s=(0,r(27162).Z)("ArrowRight",[["path",{d:"M5 12h14",key:"1ays0h"}],["path",{d:"m12 5 7 7-7 7",key:"xquz4c"}]])},57371:(e,t,r)=>{"use strict";r.d(t,{default:()=>a.a});var s=r(670),a=r.n(s)},670:(e,t,r)=>{"use strict";let{createProxy:s}=r(68570);e.exports=s("C:\\Users\\ACER\\TCG Pok\xe9mon\\node_modules\\next\\dist\\client\\link.js")}};var t=require("../../webpack-runtime.js");t.C(e);var r=e=>t(t.s=e),s=t.X(0,[948,276,881],()=>r(19364));module.exports=s})();
+ */let s=(0,r(27162).Z)("ArrowRight",[["path",{d:"M5 12h14",key:"1ays0h"}],["path",{d:"m12 5 7 7-7 7",key:"xquz4c"}]])},57371:(e,t,r)=>{"use strict";r.d(t,{default:()=>a.a});var s=r(670),a=r.n(s)},670:(e,t,r)=>{"use strict";let{createProxy:s}=r(68570);e.exports=s("C:\\Users\\ACER\\TCG Pok\xe9mon\\node_modules\\next\\dist\\client\\link.js")}};var t=require("../../webpack-runtime.js");t.C(e);var r=e=>t(t.s=e),s=t.X(0,[948,276,942],()=>r(19364));module.exports=s})();

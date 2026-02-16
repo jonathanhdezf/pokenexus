@@ -73,6 +73,108 @@ const rarityGlow: Record<string, string> = {
     secret: "shadow-[0_0_50px_rgba(0,242,255,0.2)]",
 };
 
+// Map TCG type to CSS element class
+const typeToElementalClass: Record<string, string> = {
+    Fire: "elemental-fire",
+    Water: "elemental-water",
+    Lightning: "elemental-lightning",
+    Grass: "elemental-grass",
+    Psychic: "elemental-psychic",
+    Darkness: "elemental-darkness",
+    Dragon: "elemental-dragon",
+    Fighting: "elemental-fighting",
+    Metal: "elemental-metal",
+    Fairy: "elemental-fairy",
+    Colorless: "elemental-colorless",
+};
+
+/** Generates the animated particle elements for a given type */
+function ElementalParticles({ type }: { type: string }) {
+    switch (type) {
+        case "Fire":
+            return (
+                <>
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="fire-particle" />
+                    ))}
+                </>
+            );
+        case "Lightning":
+            return (
+                <>
+                    {[0, 1, 2, 3].map((i) => (
+                        <svg key={i} className="lightning-bolt" width="16" height="24" viewBox="0 0 16 24" fill="none">
+                            <path d="M10 0L0 14h6L4 24l12-16H10L14 0h-4z" fill="#ffd700" />
+                        </svg>
+                    ))}
+                </>
+            );
+        case "Water":
+            return (
+                <>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="water-bubble" />
+                    ))}
+                </>
+            );
+        case "Grass":
+            return (
+                <>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="grass-leaf">🍃</div>
+                    ))}
+                </>
+            );
+        case "Psychic":
+            return (
+                <>
+                    <div className="psychic-ring" />
+                    <div className="psychic-ring" />
+                    <div className="psychic-ring" />
+                    <div className="psychic-orb" />
+                    <div className="psychic-orb" />
+                    <div className="psychic-orb" />
+                </>
+            );
+        case "Darkness":
+            return (
+                <>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="dark-wisp" />
+                    ))}
+                </>
+            );
+        case "Dragon":
+            return (
+                <>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="dragon-energy" />
+                    ))}
+                </>
+            );
+        case "Fighting":
+            return (
+                <>
+                    {[0, 1, 2, 3].map((i) => (
+                        <svg key={i} className="fight-impact" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z" fill="#ea580c" opacity="0.8" />
+                        </svg>
+                    ))}
+                </>
+            );
+        case "Fairy":
+            return (
+                <>
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="fairy-sparkle" />
+                    ))}
+                </>
+            );
+        default:
+            return null;
+    }
+}
+
 const mapRarity = (rarity: string): "common" | "rare" | "ultra-rare" | "secret" => {
     const r = rarity?.toLowerCase() || "";
     if (r.includes("secret") || r.includes("rainbow") || r.includes("hyper")) return "secret";
@@ -263,14 +365,18 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
                                 <div className={`absolute inset-0 ${rarity === "secret" ? "bg-[radial-gradient(circle_at_50%_50%,rgba(0,242,255,0.08),transparent_60%)]" : rarity === "ultra-rare" ? "bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.08),transparent_60%)]" : "bg-[radial-gradient(circle_at_50%_50%,rgba(234,179,8,0.05),transparent_60%)]"}`} />
                             )}
 
-                            <div className="relative group mb-6">
+                            {/* Card with Elemental Effects */}
+                            <div className={`relative group mb-6 elemental-border ${typeToElementalClass[types[0]] || ""}`}>
+                                {/* Animated type particles */}
+                                <ElementalParticles type={types[0] || ""} />
+
                                 <img
                                     src={card.images?.large || card.images?.small || ""}
                                     alt={card.name}
-                                    className="w-full max-w-[280px] rounded-2xl transition-transform duration-500 group-hover:scale-105"
+                                    className="relative z-[2] w-full max-w-[280px] rounded-2xl transition-transform duration-500 group-hover:scale-105"
                                 />
                                 {(rarity === "secret" || rarity === "ultra-rare") && (
-                                    <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 bg-gradient-to-br from-cyan-400/20 via-purple-400/20 to-pink-400/20 mix-blend-overlay pointer-events-none" />
+                                    <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 bg-gradient-to-br from-cyan-400/20 via-purple-400/20 to-pink-400/20 mix-blend-overlay pointer-events-none z-[3]" />
                                 )}
                             </div>
 
