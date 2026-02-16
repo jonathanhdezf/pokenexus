@@ -9,21 +9,38 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function Home() {
     const [searchTerm, setSearchTerm] = useState("");
     const [executedSearchTerm, setExecutedSearchTerm] = useState("");
+    const [selectedType, setSelectedType] = useState("");
     const [cards, setCards] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
 
-    const fetchCatalog = async (query = "", pageNum = 1) => {
+    const POKEMON_TYPES = [
+        "Colorless", "Darkness", "Dragon", "Fairy", "Fighting",
+        "Fire", "Grass", "Lightning", "Metal", "Psychic", "Water"
+    ];
+
+    const fetchCatalog = async (query = "", pageNum = 1, type = selectedType) => {
         setIsLoading(true);
         if (query) setExecutedSearchTerm(query);
-        else if (pageNum === 1) setExecutedSearchTerm("");
+        else if (pageNum === 1 && !type) setExecutedSearchTerm("");
 
         try {
-            // Si hay búsqueda, buscamos por nombre. Si no, traemos lo más nuevo del mercado.
-            const q = query.trim() ? `name:"${query.trim()}*"` : "";
-            const url = `https://api.pokemontcg.io/v2/cards?${q ? `q=${encodeURIComponent(q)}&` : ""}pageSize=12&page=${pageNum}&orderBy=-set.releaseDate`;
+            // Lógica de construcción de query Senior
+            let parts = [];
 
-            console.log("Nexus Catalog Fetching:", url);
+            // 1. Filtro por nombre si existe
+            if (query.trim()) parts.push(`name:"*${query.trim()}*"`);
+
+            // 2. Filtro por tipo si existe
+            if (type) parts.push(`types:"${type}"`);
+
+            // 3. Fallback: Si no hay nada, traemos todos los pokemon (evita resultados vacíos)
+            if (parts.length === 0) parts.push("supertype:pokemon");
+
+            const q = parts.join(" ");
+            const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=12&page=${pageNum}&orderBy=-set.releaseDate`;
+
+            console.log("Nexus Catalog Engine -> Fetching:", url);
 
             const response = await fetch(url);
             if (!response.ok) throw new Error(`API Error: ${response.status}`);
@@ -36,14 +53,22 @@ export default function Home() {
                 setCards(prev => [...prev, ...(data.data || [])]);
             }
         } catch (error: any) {
-            console.error("Nexus Catalog Error:", error);
+            console.error("Nexus Engine Log (Critical):", error);
             if (pageNum === 1) setCards([]);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Carga inicial del catálogo completo (lo más nuevo)
+    // Al cambiar filtros o búsqueda, reiniciamos
+    const handleFilterChange = (type: string) => {
+        const newType = selectedType === type ? "" : type; // Toggle
+        setSelectedType(newType);
+        setPage(1);
+        fetchCatalog(searchTerm, 1, newType);
+    };
+
+    // Carga inicial 
     useEffect(() => {
         fetchCatalog();
     }, []);
@@ -198,7 +223,11 @@ export default function Home() {
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-black mb-4 font-display">
-                                {executedSearchTerm ? `RESULTADOS PARA "${executedSearchTerm.toUpperCase()}"` : "CARTAS DESTACADAS"}
+                                {executedSearchTerm
+                                    ? `RESULTADOS PARA "${executedSearchTerm.toUpperCase()}"`
+                                    : selectedType
+                                        ? `CARTAS TIPO ${selectedType.toUpperCase()}`
+                                        : "CATÁLOGO NEXUS"}
                             </h2>
                             <p className="text-gray-400">Datos verificados en tiempo real por el Nexus.</p>
                         </div>
@@ -208,6 +237,22 @@ export default function Home() {
                                 Ver Catálogo Completo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </div>
+                    </div>
+
+                    {/* Type Filter Bar */}
+                    <div className="flex flex-wrap gap-3 mb-12">
+                        {POKEMON_TYPES.map((type) => (
+                            <button
+                                key={type}
+                                onClick={() => handleFilterChange(type)}
+                                className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${selectedType === type
+                                        ? "bg-primary text-nexus border-primary shadow-[0_0_20px_rgba(0,184,212,0.4)]"
+                                        : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:bg-white/10"
+                                    }`}
+                            >
+                                {type}
+                            </button>
+                        ))}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 min-h-[400px]">
