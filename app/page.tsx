@@ -8,41 +8,61 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [executedSearchTerm, setExecutedSearchTerm] = useState("");
     const [cards, setCards] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Fetch initial trending cards
-    useEffect(() => {
-        handleSearch("Pikachu");
-    }, []);
-
-    const handleSearch = async (query: string) => {
+    const handleSearch = async (query: string, isInitial = false) => {
         setIsLoading(true);
+        if (!isInitial) setExecutedSearchTerm(query);
         try {
-            const q = query || "Pikachu";
-            // Buscamos cartas que contengan el nombre, ordenadas por relevancia y fecha
-            const response = await fetch(
-                `https://api.pokemontcg.io/v2/cards?q=name:"*${q}*"&pageSize=9&orderBy=-set.releaseDate`,
-                {
-                    headers: {
-                        // Usar una API Key si el usuario tuviera una para mayor velocidad, 
-                        // pero por ahora usamos el límite gratuito estándar.
-                        "Content-Type": "application/json",
-                    }
-                }
-            );
+            // Lógica Senior: Definimos una consulta robusta
+            let q = "";
+            if (isInitial) {
+                // Para el Home inicial, traemos cartas espectaculares de sets recientes
+                // Esto garantiza que siempre haya contenido visualmente premium al entrar
+                const premiumSets = ["swsh12pt5", "swsh11", "swsh10", "sv1", "sv2", "sv3"];
+                const randomSet = premiumSets[Math.floor(Math.random() * premiumSets.length)];
+                q = `set.id:${randomSet} (rarity:"Rare Holo VMAX" OR rarity:"Rare Holo V" OR rarity:"Illustration Rare")`;
+            } else {
+                // Búsqueda del usuario: permitimos búsqueda por nombre parcial
+                const cleanQuery = query.trim();
+                if (!cleanQuery) return; // Evitar búsquedas vacías si no es el inicial
+                q = `name:"*${cleanQuery}*"`;
+            }
 
-            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+            const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=6&orderBy=-set.releaseDate`;
+
+            // Controller para abortar si tarda demasiado (7 segundos)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) throw new Error(`Status: ${response.status}`);
 
             const data = await response.json();
             setCards(data.data || []);
-        } catch (error) {
-            console.error("Senior dev logs: API Fetch failed", error);
-            setCards([]);
+        } catch (error: any) {
+            console.error("Nexus Engine Log:", error.name === 'AbortError' ? 'Timeout' : error.message);
+            // Intentar un fallback si el específico por set falló en inicial
+            if (isInitial) {
+                const fallbackResponse = await fetch(`https://api.pokemontcg.io/v2/cards?q=rarity:"Rare Holo VMAX"&pageSize=6`);
+                const fallbackData = await fallbackResponse.json();
+                setCards(fallbackData.data || []);
+            } else {
+                setCards([]);
+            }
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Al montar, cargamos las cartas destacadas iniciales (modo aleatorio de rareza alta)
+    useEffect(() => {
+        handleSearch("", true);
+    }, []);
 
     const getMarketPrice = (card: any) => {
         // Lógica de Programador Senior para extraer el valor de mercado más realista
@@ -185,7 +205,7 @@ export default function Home() {
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-black mb-4 font-display">
-                                {searchTerm ? `RESULTADOS PARA "${searchTerm.toUpperCase()}"` : "CARTAS DESTACADAS"}
+                                {executedSearchTerm ? `RESULTADOS PARA "${executedSearchTerm.toUpperCase()}"` : "CARTAS DESTACADAS"}
                             </h2>
                             <p className="text-gray-400">Datos verificados en tiempo real por el Nexus.</p>
                         </div>
