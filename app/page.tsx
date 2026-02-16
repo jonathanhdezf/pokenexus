@@ -13,7 +13,7 @@ export default function Home() {
 
     // Fetch initial trending cards
     useEffect(() => {
-        handleSearch("rarity:\"Rare Holo VMAX\"");
+        handleSearch("Pikachu");
     }, []);
 
     const handleSearch = async (query: string) => {
@@ -99,16 +99,16 @@ export default function Home() {
                         <div className="relative w-[320px] md:w-[450px] aspect-[3/4] animate-float">
                             <div className="absolute inset-0 bg-primary/30 blur-[60px] rounded-[40px] opacity-50" />
                             <div className="absolute inset-0 glass-premium rounded-[32px] p-4 flex flex-col justify-end overflow-hidden group cursor-pointer shadow-2xl">
-                                <div className="absolute inset-0 bg-[url('https://images.pokemontcg.io/swsh7/215_hires.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
+                                <div className="absolute inset-0 bg-[url('https://images.pokemontcg.io/swsh12pt5/160_hires.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                                 <div className="relative z-10 flex justify-between items-end">
                                     <div>
-                                        <h3 className="text-2xl font-black text-white">Umbreon VMAX</h3>
-                                        <p className="text-primary font-bold text-xs uppercase tracking-widest">Evolving Skies</p>
+                                        <h3 className="text-2xl font-black text-white">Pikachu VMAX</h3>
+                                        <p className="text-primary font-bold text-xs uppercase tracking-widest">Crown Zenith</p>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">Valor de Mercado</p>
-                                        <p className="text-2xl font-black text-white">$650.00</p>
+                                        <p className="text-2xl font-black text-white">$250.00</p>
                                     </div>
                                 </div>
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
