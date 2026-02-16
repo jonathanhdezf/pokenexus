@@ -53,14 +53,16 @@ export default function StreamingPage() {
                 <motion.div
                     layout
                     className={`relative transition-all duration-700 overflow-hidden shadow-3xl bg-black ${isTheaterMode
-                            ? 'w-full h-[88vh] rounded-none'
-                            : 'aspect-video w-full rounded-[40px] border border-white/10'
+                        ? 'w-full h-[88vh] rounded-none'
+                        : 'aspect-video w-full rounded-[40px] border border-white/10'
                         }`}
                 >
-                    {/* Master Interaction Tip - Floating Badge */}
-                    <div className="absolute top-24 left-1/2 -translate-x-1/2 z-40 pointer-events-none group-hover:opacity-0 transition-opacity">
-                        <div className="px-4 py-2 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">
-                            Haz clic y presiona (M) y (T) para sonido y modo cine total
+                    {/* Master Interaction Tip - Floating Badge in Top Right */}
+                    <div className="absolute top-24 right-6 z-40 pointer-events-none transition-opacity">
+                        <div className="px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-primary/30 text-[10px] font-black uppercase tracking-widest text-white shadow-2xl max-w-[200px]">
+                            <span className="text-primary animate-pulse mr-2">●</span>
+                            Haz clic aquí para activar sonido y modo teatro. <br />
+                            <span className="text-primary/80 mt-1 block">Al dar clic presionar M y T</span>
                         </div>
                     </div>
                     {/* The Iframe with Specific Latam Channel requested by User */}
