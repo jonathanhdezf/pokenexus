@@ -25,23 +25,23 @@ export default function Home() {
         else if (pageNum === 1 && !type) setExecutedSearchTerm("");
 
         try {
-            // Construcción ultra-simple de la URL
-            let queryParts = [];
-            if (query.trim()) queryParts.push(`name:"*${query.trim()}*"`);
+            const queryParts = [];
+            if (query.trim()) queryParts.push(`name:"${query.trim()}*"`);
             if (type) queryParts.push(`types:"${type}"`);
 
-            const qParam = queryParts.length > 0 ? `q=${encodeURIComponent(queryParts.join(" "))}&` : "";
-            const url = `https://api.pokemontcg.io/v2/cards?${qParam}pageSize=12&page=${pageNum}`;
+            const qString = queryParts.length > 0 ? `q=${encodeURIComponent(queryParts.join(" "))}` : "";
+            const pageParam = `pageSize=12&page=${pageNum}`;
+            const url = `https://api.pokemontcg.io/v2/cards?${qString}${qString ? "&" : ""}${pageParam}`;
 
-            console.log("Nexus Fetching URL:", url);
+            const response = await fetch(url, {
+                cache: 'no-store',
+                headers: { 'Accept': 'application/json' }
+            });
 
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+            if (!response.ok) throw new Error(`Status ${response.status}`);
 
             const data = await response.json();
             const results = data.data || [];
-
-            console.log("Nexus Results size:", results.length);
 
             if (pageNum === 1) {
                 setCards(results);
@@ -49,8 +49,18 @@ export default function Home() {
                 setCards(prev => [...prev, ...results]);
             }
         } catch (error: any) {
-            console.error("Nexus Engine Log (Critical):", error.message);
-            if (pageNum === 1) setCards([]);
+            console.error("Nexus Engine Error:", error.message);
+            if (pageNum === 1) {
+                // Fallback de emergencia con una carta garantizada para verificar renderizado
+                setCards([{
+                    id: "swsh12pt5-160",
+                    name: "Pikachu (Offline Mode)",
+                    set: { name: "Crown Zenith" },
+                    images: { large: "https://images.pokemontcg.io/swsh12pt5/160_hires.png" },
+                    rarity: "Rare Holo VMAX",
+                    cardmarket: { prices: { averageSellPrice: 0 } }
+                }]);
+            }
         } finally {
             setIsLoading(false);
         }
