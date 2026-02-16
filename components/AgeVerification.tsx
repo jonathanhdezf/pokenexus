@@ -92,9 +92,9 @@ export default function AgeVerification() {
                                     transition={{ duration: 2, repeat: Infinity }}
                                     className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50 mb-2"
                                 >
-                                    System Verification
+                                    Sistema de Verificación
                                 </motion.span>
-                                <h2 className="text-2xl md:text-3xl font-black font-display text-white tracking-tighter">ACCESO NEXUS</h2>
+                                <h2 className="text-2xl md:text-3xl font-black font-display text-white tracking-tighter">ACCESO POKENEXUS</h2>
                             </div>
                         </div>
 
