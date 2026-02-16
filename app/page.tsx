@@ -20,21 +20,47 @@ export default function Home() {
         setIsLoading(true);
         try {
             const q = query || "Pikachu";
-            // Usamos una sintaxis de búsqueda más limpia y robusta para la API v2
-            const response = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"${q}*"&pageSize=6&orderBy=-set.releaseDate`);
+            // Buscamos cartas que contengan el nombre, ordenadas por relevancia y fecha
+            const response = await fetch(
+                `https://api.pokemontcg.io/v2/cards?q=name:"*${q}*"&pageSize=9&orderBy=-set.releaseDate`,
+                {
+                    headers: {
+                        // Usar una API Key si el usuario tuviera una para mayor velocidad, 
+                        // pero por ahora usamos el límite gratuito estándar.
+                        "Content-Type": "application/json",
+                    }
+                }
+            );
 
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
             const data = await response.json();
             setCards(data.data || []);
         } catch (error) {
-            console.error("Error fetching cards:", error);
-            setCards([]); // Limpiar cartas para quitar el estado de carga
+            console.error("Senior dev logs: API Fetch failed", error);
+            setCards([]);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const getMarketPrice = (card: any) => {
+        // Lógica de Programador Senior para extraer el valor de mercado más realista
+        // Prioridad: TCGPlayer Market (Holofoil -> Normal) -> Cardmarket Average -> "Consultar"
+        const tcg = card.tcgplayer?.prices;
+        const cm = card.cardmarket?.prices;
+
+        if (tcg) {
+            const val = tcg.holofoil?.market || tcg.normal?.market || tcg.unlimitedHolofoil?.market;
+            if (val) return `$${val.toFixed(2)}`;
+        }
+
+        if (cm) {
+            const val = cm.averageSellPrice || cm.trendPrice;
+            if (val) return `$${val.toFixed(2)}`;
+        }
+
+        return "CONSULTAR";
     };
 
     const mapRarity = (rarity: string): "common" | "rare" | "ultra-rare" | "secret" => {
@@ -186,7 +212,7 @@ export default function Home() {
                                         id={card.id}
                                         name={card.name}
                                         set={card.set.name}
-                                        price={card.cardmarket?.prices?.averageSellPrice ? `$${card.cardmarket.prices.averageSellPrice}` : "N/A"}
+                                        price={getMarketPrice(card)}
                                         imageUrl={card.images.large}
                                         rarity={mapRarity(card.rarity)}
                                     />
