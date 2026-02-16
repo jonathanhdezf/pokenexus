@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import UserNav from "@/components/auth/UserNav";
+import NotificationBell from "@/components/layout/NotificationBell";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
@@ -20,10 +21,12 @@ export default function Header() {
                 <nav className="hidden md:flex gap-8 text-sm font-medium text-gray-400">
                     <Link href="/marketplace" className="hover:text-white transition-colors">Marketplace</Link>
                     <Link href="/auctions" className="hover:text-white transition-colors">Auctions</Link>
+                    <Link href="/sell" className="hover:text-white transition-colors">Sell</Link>
                     <Link href="/community" className="hover:text-white transition-colors">Community</Link>
                 </nav>
 
                 <div className="flex items-center gap-4">
+                    <NotificationBell />
                     <UserNav />
                 </div>
             </div>

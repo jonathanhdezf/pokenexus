@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { Coins, Plus, TrendingUp } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -36,9 +37,12 @@ export default async function DashboardPage() {
     return (
         <main className="min-h-screen pt-24 px-6 max-w-7xl mx-auto pb-20">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-                <div>
+                <div className="flex flex-col">
                     <h1 className="text-4xl font-bold font-display mb-2">My Collection</h1>
-                    <p className="text-gray-400">Manage your portfolio and track value.</p>
+                    <nav className="flex gap-4 mt-2">
+                        <Link href="/dashboard" className="text-sm font-bold text-white border-b-2 border-primary pb-1">Collection</Link>
+                        <Link href="/dashboard/listings" className="text-sm font-bold text-gray-400 hover:text-white transition-colors pb-1">My Shop</Link>
+                    </nav>
                 </div>
 
                 <div className="flex gap-4">

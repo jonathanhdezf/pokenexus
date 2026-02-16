@@ -129,10 +129,10 @@ export default function AuctionDetail({ listingId, initialPrice, initialBids, en
         setSuccessMsg("");
 
         try {
-            const res = await fetch("/api/auctions/bid", {
+            const res = await fetch(`/api/auctions/${listingId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ listingId, amount }),
+                body: JSON.stringify({ amount }),
             });
 
             const data = await res.json();

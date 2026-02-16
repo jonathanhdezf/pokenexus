@@ -112,6 +112,7 @@ export default function Home() {
                         {featuredCards.map((card) => (
                             <InteractiveCard
                                 key={card.id}
+                                id={card.id.toString()}
                                 name={card.name}
                                 set={card.set}
                                 price={card.price}
