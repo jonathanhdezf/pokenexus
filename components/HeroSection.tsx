@@ -123,17 +123,25 @@ export default function HeroSection() {
                     transition={{ duration: 0.8 }}
                     className="relative flex justify-center lg:justify-end"
                 >
-                    <div className="relative w-[320px] md:w-[450px] aspect-[3/4] animate-float">
+                    <div className="relative w-[320px] md:w-[450px] aspect-[3/4] animate-float group cursor-pointer">
+                        {/* 1. Underlying Glow */}
                         <div className="absolute inset-0 bg-primary/30 blur-[60px] rounded-[40px] opacity-50" />
-                        <div className="absolute inset-0 glass-premium rounded-[32px] p-4 flex flex-col justify-end overflow-hidden group cursor-pointer shadow-2xl border border-white/10 elemental-border elemental-lightning">
+
+                        {/* 2. Elemental Aura Layer */}
+                        <div className="absolute inset-0 elemental-border elemental-lightning rounded-[32px] pointer-events-none z-0" />
+
+                        {/* 3. Main Card Content */}
+                        <div className="absolute inset-0 glass-premium rounded-[32px] p-4 flex flex-col justify-end overflow-hidden shadow-2xl border border-white/10 z-10">
                             {/* Animated lightning bolt particles */}
                             {[0, 1, 2, 3].map((i) => (
                                 <svg key={i} className="lightning-bolt" width="16" height="24" viewBox="0 0 16 24" fill="none">
                                     <path d="M10 0L0 14h6L4 24l12-16H10L14 0h-4z" fill="#ffd700" />
                                 </svg>
                             ))}
+
                             <div className="absolute inset-0 bg-[url('https://images.pokemontcg.io/swsh12pt5/160_hires.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+
                             <div className="relative z-20 flex justify-between items-end">
                                 <div>
                                     <h3 className="text-2xl font-black text-white">Pikachu VMAX</h3>
@@ -144,6 +152,7 @@ export default function HeroSection() {
                                     <p className="text-2xl font-black text-white">$250.00</p>
                                 </div>
                             </div>
+
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
                                 <div className="absolute inset-0 bg-holo-card mix-blend-overlay animate-holofoil bg-[length:200%_200%]" />
                             </div>
