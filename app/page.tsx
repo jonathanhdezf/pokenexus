@@ -25,35 +25,31 @@ export default function Home() {
         else if (pageNum === 1 && !type) setExecutedSearchTerm("");
 
         try {
-            // Lógica de construcción de query Senior
-            let parts = [];
+            // Construcción ultra-simple de la URL
+            let queryParts = [];
+            if (query.trim()) queryParts.push(`name:"*${query.trim()}*"`);
+            if (type) queryParts.push(`types:"${type}"`);
 
-            // 1. Filtro por nombre si existe
-            if (query.trim()) parts.push(`name:"*${query.trim()}*"`);
+            const qParam = queryParts.length > 0 ? `q=${encodeURIComponent(queryParts.join(" "))}&` : "";
+            const url = `https://api.pokemontcg.io/v2/cards?${qParam}pageSize=12&page=${pageNum}`;
 
-            // 2. Filtro por tipo si existe
-            if (type) parts.push(`types:"${type}"`);
-
-            // 3. Fallback: Si no hay nada, traemos todos los pokemon (evita resultados vacíos)
-            if (parts.length === 0) parts.push("supertype:pokemon");
-
-            const q = parts.join(" ");
-            const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=12&page=${pageNum}&orderBy=-set.releaseDate`;
-
-            console.log("Nexus Catalog Engine -> Fetching:", url);
+            console.log("Nexus Fetching URL:", url);
 
             const response = await fetch(url);
             if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
             const data = await response.json();
+            const results = data.data || [];
+
+            console.log("Nexus Results size:", results.length);
 
             if (pageNum === 1) {
-                setCards(data.data || []);
+                setCards(results);
             } else {
-                setCards(prev => [...prev, ...(data.data || [])]);
+                setCards(prev => [...prev, ...results]);
             }
         } catch (error: any) {
-            console.error("Nexus Engine Log (Critical):", error);
+            console.error("Nexus Engine Log (Critical):", error.message);
             if (pageNum === 1) setCards([]);
         } finally {
             setIsLoading(false);
@@ -246,8 +242,8 @@ export default function Home() {
                                 key={type}
                                 onClick={() => handleFilterChange(type)}
                                 className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${selectedType === type
-                                        ? "bg-primary text-nexus border-primary shadow-[0_0_20px_rgba(0,184,212,0.4)]"
-                                        : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:bg-white/10"
+                                    ? "bg-primary text-nexus border-primary shadow-[0_0_20px_rgba(0,184,212,0.4)]"
+                                    : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:bg-white/10"
                                     }`}
                             >
                                 {type}
