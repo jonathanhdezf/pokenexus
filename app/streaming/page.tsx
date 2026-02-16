@@ -61,8 +61,8 @@ export default function StreamingPage() {
                     <div className="absolute top-24 right-6 z-40 pointer-events-none transition-opacity">
                         <div className="px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-primary/30 text-[10px] font-black uppercase tracking-widest text-white shadow-2xl max-w-[200px]">
                             <span className="text-primary animate-pulse mr-2">●</span>
-                            Haz clic aquí para activar sonido y modo teatro. <br />
-                            <span className="text-primary/80 mt-1 block">Al dar clic presionar M y T</span>
+                            (m) Activa sonido <br />
+                            (t) Modo teatro
                         </div>
                     </div>
                     {/* The Iframe with Specific Latam Channel requested by User */}
