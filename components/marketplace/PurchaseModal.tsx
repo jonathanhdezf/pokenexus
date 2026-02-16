@@ -166,41 +166,126 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
                             )}
 
                             {step === "processing" && (
-                                <div className="py-12 flex flex-col items-center justify-center text-center">
-                                    <div className="relative mb-8">
-                                        <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
-                                        <Loader2 className="w-16 h-16 text-primary animate-spin relative" />
+                                <div className="py-12 flex flex-col items-center justify-center text-center overflow-hidden">
+                                    <div className="relative w-64 h-64 flex items-center justify-center">
+                                        {/* Red beam effect from Poke ball */}
+                                        <motion.div
+                                            initial={{ scale: 0, opacity: 0 }}
+                                            animate={{
+                                                scale: [0, 1.5, 0],
+                                                opacity: [0, 0.7, 0],
+                                            }}
+                                            transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
+                                            className="absolute w-20 h-40 bg-red-500 blur-3xl z-10 origin-bottom"
+                                            style={{ bottom: '45%' }}
+                                        />
+
+                                        {/* The Card being captured */}
+                                        <motion.div
+                                            initial={{ scale: 1, opacity: 1, y: -40, rotate: 0 }}
+                                            animate={{
+                                                scale: [1, 0.3, 0],
+                                                y: [-40, -10, 40],
+                                                rotate: [0, 45, 180],
+                                                opacity: [1, 1, 0]
+                                            }}
+                                            transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
+                                            className="absolute w-28 h-40 z-0 overflow-hidden rounded-lg border border-white/20 shadow-2xl"
+                                        >
+                                            <img src={card.imageUrl} className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-red-500/30 mix-blend-overlay" />
+                                        </motion.div>
+
+                                        {/* The Pokéball */}
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", damping: 10 }}
+                                            className="relative z-20"
+                                        >
+                                            <motion.img
+                                                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+                                                className="w-24 h-24 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                                                animate={{
+                                                    rotate: [0, -15, 15, -15, 15, 0],
+                                                    x: [0, -4, 4, -4, 4, 0]
+                                                }}
+                                                transition={{
+                                                    duration: 1.5,
+                                                    repeat: Infinity,
+                                                    repeatDelay: 0.5,
+                                                    times: [0, 0.2, 0.4, 0.6, 0.8, 1]
+                                                }}
+                                            />
+
+                                            {/* Button Light */}
+                                            <motion.div
+                                                animate={{
+                                                    backgroundColor: ["rgb(255,255,255)", "rgb(255,0,0)", "rgb(255,255,255)"]
+                                                }}
+                                                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
+                                                className="absolute top-[48%] left-[48%] w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 z-30"
+                                            />
+                                        </motion.div>
                                     </div>
-                                    <h2 className="text-2xl font-bold mb-2">Verifying Transaction</h2>
-                                    <p className="text-gray-400 max-w-xs">
-                                        Authenticating card ownership and processing payment on the PokéNexus chain...
+
+                                    <h2 className="text-2xl font-black font-display mb-2 mt-4 tracking-tight uppercase">¡Capturando Carta!</h2>
+                                    <p className="text-gray-400 max-w-xs text-sm">
+                                        Validando transacción en la PokéNexus Chain...
                                     </p>
                                 </div>
                             )}
 
                             {step === "success" && (
-                                <div className="animate-in zoom-in duration-500 flex flex-col items-center justify-center text-center py-8">
-                                    <div className="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mb-8 relative">
-                                        <div className="absolute inset-0 bg-green-500/10 blur-xl rounded-full animate-pulse" />
-                                        <CheckCircle2 className="w-12 h-12 text-green-500" />
+                                <div className="animate-in zoom-in duration-500 flex flex-col items-center justify-center text-center py-8 relative">
+                                    <div className="relative mb-8">
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: [0, 1.2, 1], rotate: [0, 360] }}
+                                            transition={{ duration: 0.5 }}
+                                            className="w-32 h-32 rounded-full bg-green-500/10 flex items-center justify-center relative border border-green-500/20"
+                                        >
+                                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" className="w-20 h-20 opacity-40 absolute blur-[2px]" />
+                                            <CheckCircle2 className="w-16 h-16 text-green-500 relative z-10" />
+                                        </motion.div>
+
+                                        {/* Capture stars */}
+                                        {[...Array(8)].map((_, i) => (
+                                            <motion.div
+                                                key={i}
+                                                initial={{ scale: 0, x: 0, y: 0 }}
+                                                animate={{
+                                                    scale: [0, 1, 0.5, 0],
+                                                    x: [0, Math.cos(i * 45 * Math.PI / 180) * 100],
+                                                    y: [0, Math.sin(i * 45 * Math.PI / 180) * 100],
+                                                    rotate: [0, 180]
+                                                }}
+                                                transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
+                                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl pointer-events-none"
+                                            >
+                                                ✨
+                                            </motion.div>
+                                        ))}
                                     </div>
-                                    <h2 className="text-3xl font-bold mb-3">Card Secured!</h2>
-                                    <p className="text-gray-400 mb-8 max-w-xs">
-                                        Congratulations! <span className="text-white font-bold">{card.name}</span> has been added to your vault.
+
+                                    <h2 className="text-3xl font-black font-display mb-3 tracking-tighter text-holographic animate-shimmer uppercase">¡CARTA CAPTURADA!</h2>
+                                    <p className="text-gray-400 mb-8 max-w-xs text-sm leading-relaxed">
+                                        ¡Excelente lanzamiento! <span className="text-white font-bold">{card.name}</span> ahora forma parte de tu colección.
                                     </p>
 
-                                    <div className="w-full space-y-3">
+                                    <div className="w-full space-y-3 relative z-10">
                                         <button
                                             onClick={goToDashboard}
-                                            className="w-full py-4 bg-primary text-black font-bold rounded-2xl hover:bg-cyan-400 transition-all shadow-lg shadow-primary/20"
+                                            className="group w-full py-4 bg-primary text-nexus font-black uppercase tracking-widest text-sm rounded-2xl hover:bg-cyan-400 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3"
                                         >
-                                            Go to Vault
+                                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
+                                            Ir a mi Colección
                                         </button>
                                         <button
                                             onClick={onClose}
-                                            className="w-full py-4 bg-surface-highlight text-white font-bold rounded-2xl hover:bg-white/10 transition-all"
+                                            className="w-full py-4 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-sm rounded-2xl hover:bg-white/10 transition-all"
                                         >
-                                            Maybe Later
+                                            Seguir Comprando
                                         </button>
                                     </div>
                                 </div>
