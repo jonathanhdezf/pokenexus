@@ -48,7 +48,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [apiError, setApiError] = useState<string | null>(null);
-    const [visibleCount, setVisibleCount] = useState(50);
+    const [visibleCount, setVisibleCount] = useState(10);
 
     const fetchCards = async (query = "", pageNum = 1, type = selectedType) => {
         setIsLoading(true);
@@ -119,7 +119,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
     };
 
     const loadMore = () => {
-        setVisibleCount(prev => prev + 50);
+        setVisibleCount(prev => prev + 10);
     };
 
     const visibleCards = cards.slice(0, visibleCount);
