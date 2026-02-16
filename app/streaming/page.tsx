@@ -57,14 +57,6 @@ export default function StreamingPage() {
                         : 'aspect-video w-full rounded-[40px] border border-white/10'
                         }`}
                 >
-                    {/* Master Interaction Tip - Floating Badge in Top Right */}
-                    <div className="absolute top-24 right-6 z-40 pointer-events-none transition-opacity">
-                        <div className="px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-primary/30 text-[10px] font-black uppercase tracking-widest text-white shadow-2xl max-w-[200px]">
-                            <span className="text-primary animate-pulse mr-2">●</span>
-                            (m) Activa sonido <br />
-                            (t) Modo teatro
-                        </div>
-                    </div>
                     {/* The Iframe with Specific Latam Channel requested by User */}
                     <iframe
                         src="https://pluto.tv/latam/live-tv/6870072ca9d5c45c3e9466f1?msockid=0c2e9bd020c663e914428d3d21596216"
