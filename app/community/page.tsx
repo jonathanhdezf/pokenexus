@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Heart, Share2, ArrowRight, Trophy, Users, TrendingUp } from "lucide-react";
+import { MessageSquare, Heart, Share2, ArrowRight, Trophy, Users, TrendingUp, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 const mockPosts = [
@@ -95,6 +96,15 @@ const typeLabels: Record<string, string> = {
 };
 
 export default function CommunityPage() {
+    const [latestUser, setLatestUser] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetch("/api/latest-user")
+            .then(res => res.json())
+            .then(data => setLatestUser(data.username))
+            .catch(() => setLatestUser("Entrenador Anónimo"));
+    }, []);
+
     return (
         <main className="min-h-screen bg-nexus pb-20">
             {/* Hero */}
@@ -212,6 +222,34 @@ export default function CommunityPage() {
 
                     {/* Sidebar */}
                     <div className="space-y-6">
+                        {/* Latest Registered User */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="rounded-[24px] glass p-6 relative overflow-hidden"
+                        >
+                            <div className="absolute top-2 right-2 opacity-10">
+                                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png" alt="" className="w-20 h-20" />
+                            </div>
+                            <div className="relative z-10">
+                                <h3 className="font-black text-sm uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                                    <UserPlus className="w-4 h-4 text-green-400" />
+                                    Nuevo Entrenador
+                                </h3>
+                                <div className="flex items-center gap-3 p-3 rounded-xl bg-green-500/5 border border-green-500/10">
+                                    <div className="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" alt="" className="w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <p className="font-black text-white text-sm">
+                                            {latestUser || "Cargando..."}
+                                        </p>
+                                        <p className="text-[10px] text-green-400 font-bold uppercase tracking-widest">Acaba de unirse 🎉</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+
                         {/* Top Traders */}
                         <div className="rounded-[24px] glass p-6">
                             <h3 className="font-black text-sm uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
