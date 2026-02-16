@@ -7,7 +7,7 @@ import { ShieldAlert, ArrowRight, XCircle } from "lucide-react";
 
 export default function AgeVerification() {
     const [isVisible, setIsVisible] = useState(false);
-    const { unlockAudio } = useAudio();
+    const { unlockAudio, playSFX } = useAudio();
 
     useEffect(() => {
         const isVerified = localStorage.getItem("age-verified");
@@ -18,10 +18,17 @@ export default function AgeVerification() {
     }, []);
 
     const handleVerify = () => {
+        // Unlock audio context and play pikachu sound
         unlockAudio();
+        playSFX("/audio/pikachu.mp3", 0.8);
+
         localStorage.setItem("age-verified", "true");
-        setIsVisible(false);
-        document.body.style.overflow = "";
+
+        // Wait a small moment for the sound to start before closing
+        setTimeout(() => {
+            setIsVisible(false);
+            document.body.style.overflow = "";
+        }, 800);
     };
 
     const handleDecline = () => {
