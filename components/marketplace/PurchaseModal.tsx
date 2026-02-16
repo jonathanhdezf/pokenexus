@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Loader2, ShieldCheck, Wallet, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useAudio } from "@/lib/audio-engine";
 
 interface PurchaseModalProps {
     card: {
@@ -24,8 +25,7 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
     const { data: session, update } = useSession();
     const [step, setStep] = useState<"confirm" | "processing" | "success">("confirm");
     const [error, setError] = useState("");
-    const throwSfxRef = useRef<HTMLAudioElement | null>(null);
-    const catchSfxRef = useRef<HTMLAudioElement | null>(null);
+    const { playSFX } = useAudio();
 
     const userBalance = Number((session?.user as any)?.walletBalance || 0);
     const cardPrice = typeof card.price === 'string'
@@ -41,11 +41,8 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
         setStep("processing");
         setError("");
 
-        // Play throw sound
-        if (throwSfxRef.current) {
-            throwSfxRef.current.volume = 0.8;
-            throwSfxRef.current.play().catch(() => { });
-        }
+        // Play throw sound using engine
+        playSFX("/audio/throw.mp3", 0.7);
 
         try {
             const res = await fetch("/api/purchase", {
@@ -69,11 +66,8 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
                 }
             });
 
-            // Play capture sound on success
-            if (catchSfxRef.current) {
-                catchSfxRef.current.volume = 0.9;
-                catchSfxRef.current.play().catch(() => { });
-            }
+            // Play capture sound on success using engine
+            playSFX("/audio/catch.mp3", 0.8);
 
             setStep("success");
         } catch (err: any) {
@@ -92,16 +86,6 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
         <AnimatePresence>
             {isOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <audio
-                        ref={throwSfxRef}
-                        src="https://play.pokemonshowdown.com/audio/sfx/pokeballsign.mp3"
-                        className="hidden"
-                    />
-                    <audio
-                        ref={catchSfxRef}
-                        src="https://play.pokemonshowdown.com/audio/sfx/dexregistration.mp3"
-                        className="hidden"
-                    />
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

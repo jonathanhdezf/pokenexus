@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ArrowRight, Eye, EyeOff, Zap, Volume2, VolumeX, Music } from "lucide-react";
+import { useAudio } from "@/lib/audio-engine";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -14,31 +15,20 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [isMuted, setIsMuted] = useState(true);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    const sfxRef = useRef<HTMLAudioElement | null>(null);
+    const { playSFX, playTheme, stopTheme, isUnlocked, isThemePlaying } = useAudio();
 
     // Initial audio setup
     useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = 0.5;
-            audioRef.current.loop = true;
-        }
+        return () => {
+            stopTheme();
+        };
     }, []);
 
     const toggleMusic = () => {
-        if (!audioRef.current) return;
-
-        if (isMuted) {
-            audioRef.current.muted = false;
-            audioRef.current.play().catch(e => console.log("Autoplay prevented", e));
-            setIsMuted(false);
-            setIsPlaying(true);
+        if (isThemePlaying) {
+            stopTheme();
         } else {
-            audioRef.current.muted = true;
-            setIsMuted(true);
-            setIsPlaying(false);
+            playTheme();
         }
     };
 
@@ -58,11 +48,8 @@ export default function LoginPage() {
                 setError("Credenciales inválidas. Intenta de nuevo.");
                 setIsLoading(false);
             } else {
-                // Play catch sound
-                if (sfxRef.current) {
-                    sfxRef.current.volume = 0.5;
-                    sfxRef.current.play().catch(() => { });
-                }
+                // Play success sound using engine
+                playSFX("/audio/login-success.mp3", 0.6);
 
                 // Wait for the sound to play before redirecting
                 setTimeout(() => {
@@ -79,23 +66,12 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-nexus relative overflow-hidden">
-            {/* Audio Element */}
-            <audio
-                ref={audioRef}
-                src="https://raw.githubusercontent.com/The-Power-Group/Pokemon-Red-Blue-Crystal-Music/master/Red%20Blue%20Yellow/mp3/03%20Pallet%20Town%20Theme.mp3"
-                className="hidden"
-                muted={isMuted}
-            />
-            <audio
-                ref={sfxRef}
-                src="https://play.pokemonshowdown.com/audio/sfx/itemget.mp3"
-                className="hidden"
-            />
+            {/* Audio engine is global via context */}
 
             {/* Music Toggle Button */}
             <div className="fixed top-8 right-8 z-[100] flex items-center gap-4">
                 <AnimatePresence>
-                    {isPlaying && (
+                    {isThemePlaying && (
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -121,13 +97,13 @@ export default function LoginPage() {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={toggleMusic}
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border overflow-hidden relative ${isMuted
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border overflow-hidden relative ${!isThemePlaying
                         ? "bg-white/5 border-white/10 text-gray-400"
                         : "bg-primary/20 border-primary/30 text-primary shadow-[0_0_20px_rgba(0,242,255,0.2)]"
                         }`}
                 >
                     <AnimatePresence mode="wait">
-                        {isMuted ? (
+                        {!isThemePlaying ? (
                             <motion.div
                                 key="muted"
                                 initial={{ opacity: 0, rotate: -45 }}
@@ -147,7 +123,7 @@ export default function LoginPage() {
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    {!isMuted && (
+                    {isThemePlaying && (
                         <motion.div
                             className="absolute inset-0 bg-primary/10"
                             animate={{ opacity: [0, 0.4, 0] }}

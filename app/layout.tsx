@@ -6,6 +6,7 @@ import NextAuthProvider from "@/components/auth/NextAuthProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AgeVerification from "@/components/AgeVerification";
+import { AudioProvider } from "@/lib/audio-engine";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -24,15 +25,17 @@ export default function RootLayout({
         <html lang="es" className={`${inter.variable} ${outfit.variable}`}>
             <body className="antialiased font-sans bg-background text-white min-h-screen selection:bg-primary selection:text-black">
                 <NextAuthProvider>
-                    <AgeVerification />
-                    <div className="absolute inset-0 bg-[url('/bg-noise.png')] opacity-5 pointer-events-none z-0"></div>
-                    <div className="relative z-10 flex flex-col min-h-screen">
-                        <Header />
-                        <div className="flex-1">
-                            {children}
+                    <AudioProvider>
+                        <AgeVerification />
+                        <div className="absolute inset-0 bg-[url('/bg-noise.png')] opacity-5 pointer-events-none z-0"></div>
+                        <div className="relative z-10 flex flex-col min-h-screen">
+                            <Header />
+                            <div className="flex-1">
+                                {children}
+                            </div>
+                            <Footer />
                         </div>
-                        <Footer />
-                    </div>
+                    </AudioProvider>
                 </NextAuthProvider>
             </body>
         </html>

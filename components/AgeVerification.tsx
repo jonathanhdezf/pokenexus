@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAudio } from "@/lib/audio-engine";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldAlert, ArrowRight, XCircle } from "lucide-react";
 
 export default function AgeVerification() {
     const [isVisible, setIsVisible] = useState(false);
+    const { unlockAudio } = useAudio();
 
     useEffect(() => {
         const isVerified = localStorage.getItem("age-verified");
@@ -16,18 +18,7 @@ export default function AgeVerification() {
     }, []);
 
     const handleVerify = () => {
-        // Essential: Unlock AudioContext for the entire site
-        const AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
-        if (AudioContext) {
-            const audioCtx = new AudioContext();
-            audioCtx.resume().then(() => {
-                // Real 1-second silent WAV to force unlock
-                const silentWav = "data:audio/wav;base64,UklGRigAAABXQVZFRm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA== ";
-                const audio = new Audio(silentWav);
-                audio.play().catch(e => console.log("Audio unlock failed", e));
-            });
-        }
-
+        unlockAudio();
         localStorage.setItem("age-verified", "true");
         setIsVisible(false);
         document.body.style.overflow = "";
