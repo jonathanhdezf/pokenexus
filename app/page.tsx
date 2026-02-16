@@ -40,9 +40,9 @@ export default async function Home() {
             {/* Features Grid */}
             <section className="w-full max-w-7xl mx-auto px-6 py-32 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                 {[
-                    { icon: "📊", title: "Datos Reales", desc: "Sincronizado directamente con la API oficial de Pokémon TCG para precios y specs." },
-                    { icon: "🔍", title: "Filtros Avanzados", desc: "Encuentra cualquier carta por set, rareza o tipo de ataque con precisión quirúrgica." },
-                    { icon: "📈", title: "Tendencias Globales", desc: "Visualiza que cartas están subiendo de precio en tiempo real en los mercados internacionales." }
+                    { icon: "📊", title: "Datos Reales", desc: "Sincronizado con la API oficial de Pokémon Trading Card Game (TCG) para precios y especificaciones técnicas." },
+                    { icon: "🔍", title: "Filtros Avanzados", desc: "Encuentra cualquier carta por expansión, rareza o tipo de ataque con precisión de mercado." },
+                    { icon: "📈", title: "Tendencias Globales", desc: "Visualiza qué cartas están subiendo de valor en tiempo real en los mercados internacionales." }
                 ].map((feature, i) => (
                     <div key={i} className="p-10 rounded-[32px] glass hover:border-primary/30 transition-all group">
                         <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 group-hover:bg-primary/10 transition-colors text-2xl">
@@ -71,10 +71,10 @@ export default async function Home() {
                         </div>
                         <h2 className="text-4xl md:text-6xl font-black font-display mb-6 leading-tight">
                             ¿TU PRIMERA VEZ EN <br />
-                            <span className="text-holographic animate-shimmer">JCC POKÉMON</span>?
+                            <span className="text-holographic animate-shimmer italic">JUEGO DE CARTAS COLECCIONABLES</span>?
                         </h2>
                         <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                            ¿Quieres empezar a jugar al Juego de Cartas Coleccionables Pokémon? Explora un montón de recursos, incluyendo videos tutoriales, consejos de juego y mucho más.
+                            ¿Quieres empezar a jugar al <span className="text-white">Juego de Cartas Coleccionables (JCC) Pokémon</span>? Explora recursos, videos tutoriales y consejos para expertos.
                         </p>
                     </div>
 
@@ -89,8 +89,8 @@ export default async function Home() {
                                 <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors overflow-hidden">
                                     <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png" alt="" className="w-10 h-10" />
                                 </div>
-                                <h3 className="text-2xl font-black font-display mb-3 group-hover:text-white transition-colors">Aprende a Jugar a JCC Pokémon</h3>
-                                <p className="text-gray-400 leading-relaxed text-sm mb-6">Domina las reglas del juego: cómo colocar Pokémon en el banco, usar Energías, evolucionar y atacar. Incluye tutoriales interactivos paso a paso con la app Pokémon TCG Live.</p>
+                                <h3 className="text-2xl font-black font-display mb-3 group-hover:text-white transition-colors">Aprende a Jugar JCC Pokémon</h3>
+                                <p className="text-gray-400 leading-relaxed text-sm mb-6">Domina las reglas del Juego de Cartas Coleccionables: cómo colocar Pokémon en el banco, usar Energías, evolucionar y atacar de forma estratégica.</p>
                                 <span className="inline-flex items-center gap-2 text-blue-400 font-black text-sm uppercase tracking-widest group-hover:gap-4 transition-all">Empezar ahora <ArrowRight className="w-4 h-4" /></span>
                             </div>
                         </a>
@@ -105,8 +105,8 @@ export default async function Home() {
                                 <div className="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors overflow-hidden">
                                     <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" alt="" className="w-10 h-10" />
                                 </div>
-                                <h3 className="text-2xl font-black font-display mb-3 group-hover:text-white transition-colors">Guía de Productos TCG</h3>
-                                <p className="text-gray-400 leading-relaxed text-sm mb-6">Conoce la diferencia entre Sobres de Expansión, Elite Trainer Boxes, Mazos de Batalla V y Colecciones Premium. Encuentra el producto ideal según tu nivel y presupuesto.</p>
+                                <h3 className="text-2xl font-black font-display mb-3 group-hover:text-white transition-colors">Guía de Productos Coleccionables</h3>
+                                <p className="text-gray-400 leading-relaxed text-sm mb-6">Conoce la diferencia entre Sobres de Expansión (Boosters), Elite Trainer Boxes (ETB), Mazos de Batalla y Colecciones Premium Especiales.</p>
                                 <span className="inline-flex items-center gap-2 text-purple-400 font-black text-sm uppercase tracking-widest group-hover:gap-4 transition-all">Ver productos <ArrowRight className="w-4 h-4" /></span>
                             </div>
                         </a>

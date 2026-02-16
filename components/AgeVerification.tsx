@@ -105,15 +105,18 @@ export default function AgeVerification() {
 
                             {/* Content Bottom */}
                             <div className="absolute inset-x-0 top-16 px-8 text-center">
-                                <p className="text-black/60 text-[11px] md:text-xs font-bold leading-tight">
-                                    Debes ser mayor de <span className="text-black font-black">18 años</span> para gestionar activos JCC y Wallet Digital.
+                                <p className="text-black/60 text-[10px] md:text-xs font-bold leading-tight uppercase tracking-tight">
+                                    Acceso restringido para mayores de <span className="text-black font-black">18 años</span>.
+                                </p>
+                                <p className="text-black/40 text-[9px] md:text-[10px] mt-2 leading-tight">
+                                    Requerido para el intercambio de <span className="text-black/60">Juego de Cartas Coleccionables (JCC)</span> y gestión de tu <span className="text-black/60">Billetera Digital (Wallet)</span>.
                                 </p>
 
                                 <button
                                     onClick={handleDecline}
-                                    className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-black/40 hover:text-red-600 transition-colors"
+                                    className="mt-3 text-[10px] font-black uppercase tracking-[0.2em] text-black/40 hover:text-red-600 transition-colors"
                                 >
-                                    Descartar e Irse
+                                    Cerrar y Salir
                                 </button>
                             </div>
                         </div>
