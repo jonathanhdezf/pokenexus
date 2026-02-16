@@ -1,70 +1,30 @@
-import Link from "next/link";
-import { ArrowRight, Search, TrendingUp, ShieldCheck } from "lucide-react";
 import CardCatalog from "@/components/CardCatalog";
+import { STATIC_CATALOG } from "@/lib/static-catalog";
 
-// Forzar renderizado dinámico - NUNCA generar estáticamente en build
+// Forzar renderizado dinámico
 export const dynamic = "force-dynamic";
 
-// Función que corre en el SERVIDOR en cada visita (no durante el build)
-// Trae 150 cartas en 3 peticiones paralelas de 50 para máxima velocidad
+// Intentamos traer datos frescos de la API, si falla usamos el catálogo estático
 async function getInitialCards() {
     const headers = {
         "X-Api-Key": "7878696b-1667-4581-9f9b-648439d56285",
         Accept: "application/json",
     };
-    const baseUrl = "https://api.pokemontcg.io/v2/cards?q=supertype:pokemon&pageSize=50&orderBy=-set.releaseDate";
 
     try {
-        // 3 páginas en paralelo = 150 cartas
-        const [res1, res2, res3] = await Promise.all([
-            fetch(`${baseUrl}&page=1`, { headers, cache: 'no-store' }),
-            fetch(`${baseUrl}&page=2`, { headers, cache: 'no-store' }),
-            fetch(`${baseUrl}&page=3`, { headers, cache: 'no-store' }),
-        ]);
+        // Una sola petición de 150 cartas (la API soporta hasta 250)
+        const res = await fetch(
+            "https://api.pokemontcg.io/v2/cards?q=supertype:pokemon&pageSize=150&page=1&orderBy=-set.releaseDate",
+            { headers, cache: "no-store", signal: AbortSignal.timeout(8000) }
+        );
 
-        const results = await Promise.all([
-            res1.ok ? res1.json() : { data: [] },
-            res2.ok ? res2.json() : { data: [] },
-            res3.ok ? res3.json() : { data: [] },
-        ]);
-
-        const allCards = [
-            ...(results[0].data || []),
-            ...(results[1].data || []),
-            ...(results[2].data || []),
-        ];
-
-        if (allCards.length > 0) return allCards;
-        throw new Error("No cards returned");
-    } catch (e) {
-        console.error("Server fetch failed:", e);
-        // Fallback offline mínimo
-        return [
-            {
-                id: "swsh12pt5-160",
-                name: "Pikachu VMAX",
-                set: { name: "Crown Zenith" },
-                images: { large: "https://images.pokemontcg.io/swsh12pt5/160_hires.png" },
-                rarity: "Ultra Rare",
-                tcgplayer: { prices: { holofoil: { market: 250.0 } } },
-            },
-            {
-                id: "cel25-4",
-                name: "Charizard",
-                set: { name: "Celebrations" },
-                images: { large: "https://images.pokemontcg.io/cel25/4_hires.png" },
-                rarity: "Rare Holo",
-                tcgplayer: { prices: { holofoil: { market: 85.0 } } },
-            },
-            {
-                id: "swsh10-188",
-                name: "Origin Forme Dialga VSTAR",
-                set: { name: "Astral Radiance" },
-                images: { large: "https://images.pokemontcg.io/swsh10/188_hires.png" },
-                rarity: "Secret Rare",
-                cardmarket: { prices: { averageSellPrice: 120.0 } },
-            },
-        ];
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
+        if (data.data && data.data.length > 0) return data.data;
+        throw new Error("Empty response");
+    } catch (e: any) {
+        console.log("API unavailable, using static catalog:", e.message);
+        return STATIC_CATALOG;
     }
 }
 
@@ -75,7 +35,6 @@ export default async function Home() {
         <main className="flex flex-col min-h-screen bg-nexus">
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
-                {/* Background Decor */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                     <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full animate-pulse-glow" />
                     <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-legendary/10 blur-[120px] rounded-full animate-pulse-glow" />
@@ -100,8 +59,6 @@ export default async function Home() {
                             Accede a la base de datos más grande del mundo. <br className="hidden md:block" />
                             Consulta precios reales, rarezas y <span className="text-white font-medium">disponibilidad global</span>.
                         </p>
-
-                        {/* Search bar is inside CardCatalog component */}
                     </div>
 
                     <div className="relative flex justify-center lg:justify-end">
@@ -136,10 +93,7 @@ export default async function Home() {
                     { icon: "🔍", title: "Filtros Avanzados", desc: "Encuentra cualquier carta por set, rareza o tipo de ataque con precisión quirúrgica." },
                     { icon: "📈", title: "Tendencias Globales", desc: "Visualiza que cartas están subiendo de precio en tiempo real en los mercados internacionales." }
                 ].map((feature, i) => (
-                    <div
-                        key={i}
-                        className="p-10 rounded-[32px] glass hover:border-primary/30 transition-all group"
-                    >
+                    <div key={i} className="p-10 rounded-[32px] glass hover:border-primary/30 transition-all group">
                         <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 group-hover:bg-primary/10 transition-colors text-2xl">
                             {feature.icon}
                         </div>
@@ -149,7 +103,7 @@ export default async function Home() {
                 ))}
             </section>
 
-            {/* Card Catalog - Client Component with server-fetched initial data */}
+            {/* Card Catalog */}
             <CardCatalog initialCards={initialCards} />
         </main>
     );

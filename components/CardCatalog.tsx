@@ -55,6 +55,23 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
         if (query) setExecutedSearchTerm(query);
         else if (pageNum === 1 && !type) setExecutedSearchTerm("");
 
+        // Filtrado local instantáneo (siempre funciona)
+        if (pageNum === 1) {
+            let filtered = initialCards;
+            if (query.trim()) {
+                const q = query.trim().toLowerCase();
+                filtered = filtered.filter((c: any) => c.name?.toLowerCase().includes(q));
+            }
+            if (type) {
+                filtered = filtered.filter((c: any) => c.types?.includes(type));
+            }
+            setCards(filtered);
+            if (filtered.length === 0 && (query || type)) {
+                setApiError("No se encontraron cartas con ese filtro.");
+            }
+        }
+
+        // Intento de API como mejora (si funciona, reemplaza los resultados locales)
         try {
             const queryParts = [];
             if (query.trim()) queryParts.push(`name:"${query.trim()}*"`);
@@ -62,37 +79,27 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
             if (queryParts.length === 0) queryParts.push("supertype:pokemon");
 
             const q = queryParts.join(" ");
-            // Intentamos primero el proxy local, si falla, directo a la API
-            let url = `/api/pokemon?q=${encodeURIComponent(q)}&pageSize=50&page=${pageNum}&orderBy=-set.releaseDate`;
+            const url = `/api/pokemon?q=${encodeURIComponent(q)}&pageSize=50&page=${pageNum}&orderBy=-set.releaseDate`;
 
-            let response = await fetch(url).catch(() => null);
+            const controller = new AbortController();
+            setTimeout(() => controller.abort(), 5000); // 5s timeout
 
-            // Si el proxy falla (404 o error de red), intentamos directo
-            if (!response || !response.ok) {
-                url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=50&page=${pageNum}&orderBy=-set.releaseDate`;
-                response = await fetch(url, {
-                    headers: { 'Accept': 'application/json' }
-                });
+            const response = await fetch(url, { signal: controller.signal }).catch(() => null);
+
+            if (response && response.ok) {
+                const data = await response.json();
+                const results = data.data || [];
+                if (results.length > 0) {
+                    setApiError(null);
+                    if (pageNum === 1) {
+                        setCards(results);
+                    } else {
+                        setCards(prev => [...prev, ...results]);
+                    }
+                }
             }
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const data = await response.json();
-            const results = data.data || [];
-
-            if (pageNum === 1) {
-                setCards(results);
-                if (results.length === 0) setApiError("No se encontraron cartas.");
-            } else {
-                setCards(prev => [...prev, ...results]);
-            }
-        } catch (error: any) {
-            console.error("Nexus Error:", error.message);
-            setApiError(`Error de conexión: ${error.message}`);
-            // Solo mostramos fallback si es la primera carga y no hay cartas
-            if (pageNum === 1 && cards.length === 0) {
-                setCards(initialCards);
-            }
+        } catch {
+            // API no disponible, mantenemos el filtrado local
         } finally {
             setIsLoading(false);
         }
