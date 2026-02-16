@@ -1,12 +1,25 @@
 "use client";
 
-import { X, ExternalLink, TrendingUp, Shield, Swords, Zap, Heart, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, ExternalLink, TrendingUp, Shield, Swords, Zap, Heart, ArrowRight, Ruler, Weight, Hash, BookOpen, Sparkles, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 interface CardDetailModalProps {
     card: any;
     onClose: () => void;
+}
+
+interface PokedexData {
+    pokedexNumber: number;
+    description: string;
+    category: string;
+    height: number; // decimeters
+    weight: number; // hectograms
+    generation: string;
+    baseStats: { name: string; value: number }[];
+    sprite: string;
+    funFact: string;
 }
 
 const typeColors: Record<string, string> = {
@@ -21,6 +34,36 @@ const typeColors: Record<string, string> = {
     Metal: "bg-gray-500",
     Psychic: "bg-purple-500",
     Water: "bg-blue-500",
+};
+
+const statLabels: Record<string, string> = {
+    hp: "PS",
+    attack: "Ataque",
+    defense: "Defensa",
+    "special-attack": "At. Esp.",
+    "special-defense": "Def. Esp.",
+    speed: "Velocidad",
+};
+
+const statColors: Record<string, string> = {
+    hp: "bg-red-500",
+    attack: "bg-orange-500",
+    defense: "bg-yellow-500",
+    "special-attack": "bg-blue-500",
+    "special-defense": "bg-green-500",
+    speed: "bg-pink-500",
+};
+
+const generationNames: Record<string, string> = {
+    "generation-i": "Gen I · Kanto",
+    "generation-ii": "Gen II · Johto",
+    "generation-iii": "Gen III · Hoenn",
+    "generation-iv": "Gen IV · Sinnoh",
+    "generation-v": "Gen V · Unova",
+    "generation-vi": "Gen VI · Kalos",
+    "generation-vii": "Gen VII · Alola",
+    "generation-viii": "Gen VIII · Galar",
+    "generation-ix": "Gen IX · Paldea",
 };
 
 const rarityGlow: Record<string, string> = {
@@ -69,7 +112,91 @@ const getPriceRange = (card: any) => {
     return null;
 };
 
+/**
+ * Extracts the base Pokémon name from a TCG card name
+ * e.g. "Charizard ex" -> "charizard", "Pikachu VMAX" -> "pikachu"
+ */
+function extractPokemonName(cardName: string): string {
+    return cardName
+        .replace(/\s+(ex|EX|GX|gx|V|VMAX|VSTAR|V-UNION|BREAK|LV\.X|SP|FB|GL|δ|Delta Species|Prism Star|◇|☆)$/i, "")
+        .replace(/\s+(ex|EX|GX|gx|V|VMAX|VSTAR)$/i, "") // double pass for compound
+        .replace(/\./g, "") // Mr. Mime -> Mr Mime
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-") // multi-word like Mr Mime -> mr-mime
+        .replace(/[^a-z0-9-]/g, "") // remove special chars
+        .replace(/nidoran-f/i, "nidoran-f")
+        .replace(/nidoran-m/i, "nidoran-m");
+}
+
+async function fetchPokedexData(cardName: string): Promise<PokedexData | null> {
+    const pokeName = extractPokemonName(cardName);
+    if (!pokeName) return null;
+
+    try {
+        // Fetch Pokémon base data and species data in parallel
+        const [pokemonRes, speciesRes] = await Promise.all([
+            fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName}`, { signal: AbortSignal.timeout(5000) }).catch(() => null),
+            fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokeName}`, { signal: AbortSignal.timeout(5000) }).catch(() => null),
+        ]);
+
+        if (!pokemonRes?.ok || !speciesRes?.ok) return null;
+
+        const [pokemon, species] = await Promise.all([
+            pokemonRes.json(),
+            speciesRes.json(),
+        ]);
+
+        // Get Spanish flavor text (Pokédex entry) - prefer latest games
+        const flavorEntries = species.flavor_text_entries?.filter(
+            (e: any) => e.language.name === "es"
+        ) || [];
+        const flavorText = flavorEntries.length > 0
+            ? flavorEntries[flavorEntries.length - 1].flavor_text.replace(/\f|\n/g, " ").replace(/\s+/g, " ").trim()
+            : null;
+
+        // Get Spanish genus/category (e.g., "Pokémon Llama")
+        const genusEntry = species.genera?.find((g: any) => g.language.name === "es");
+        const category = genusEntry?.genus || "";
+
+        // Get generation
+        const generation = species.generation?.name || "";
+
+        // Build base stats
+        const baseStats = pokemon.stats.map((s: any) => ({
+            name: s.stat.name,
+            value: s.base_stat,
+        }));
+
+        // Build fun fact from Spanish flavor text of a different game for variety
+        let funFact = "";
+        if (flavorEntries.length > 1) {
+            const altEntry = flavorEntries[Math.max(0, flavorEntries.length - 2)];
+            funFact = altEntry.flavor_text.replace(/\f|\n/g, " ").replace(/\s+/g, " ").trim();
+            if (funFact === flavorText) funFact = ""; // Avoid duplicate
+        }
+
+        return {
+            pokedexNumber: pokemon.id,
+            description: flavorText || "Sin descripción disponible.",
+            category,
+            height: pokemon.height, // in decimeters
+            weight: pokemon.weight, // in hectograms
+            generation,
+            baseStats,
+            sprite: pokemon.sprites?.other?.["official-artwork"]?.front_default ||
+                pokemon.sprites?.front_default || "",
+            funFact,
+        };
+    } catch {
+        return null;
+    }
+}
+
 export default function CardDetailModal({ card, onClose }: CardDetailModalProps) {
+    const [pokedex, setPokedex] = useState<PokedexData | null>(null);
+    const [loadingPokedex, setLoadingPokedex] = useState(true);
+
     const rarity = mapRarity(card.rarity || "");
     const price = getMarketPrice(card);
     const priceRange = getPriceRange(card);
@@ -80,12 +207,21 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
     const retreatCost = card.retreatCost || [];
     const hp = card.hp || null;
     const artist = card.artist || null;
-    const number = card.number || null;
+    const cardNumber = card.number || null;
     const setData = card.set || {};
-    const supertype = card.supertype || "Pokémon";
     const subtypes = card.subtypes || [];
     const abilities = card.abilities || [];
     const rules = card.rules || [];
+
+    useEffect(() => {
+        setLoadingPokedex(true);
+        fetchPokedexData(card.name).then((data) => {
+            setPokedex(data);
+            setLoadingPokedex(false);
+        });
+    }, [card.name]);
+
+    const maxStat = 255; // Max possible base stat for scale
 
     return (
         <AnimatePresence>
@@ -117,28 +253,77 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
                     </button>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                        {/* Left: Card Image */}
-                        <div className="relative p-8 md:p-12 flex items-center justify-center bg-gradient-to-br from-black/50 to-transparent">
+                        {/* Left: Card Image + Pokédex Info */}
+                        <div className="relative p-8 md:p-12 flex flex-col items-center justify-start bg-gradient-to-br from-black/50 to-transparent">
                             <div className="absolute inset-0 opacity-5">
                                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,242,255,0.1),transparent_70%)]" />
                             </div>
 
-                            {/* Rarity Glow behind card */}
                             {rarity !== "common" && (
                                 <div className={`absolute inset-0 ${rarity === "secret" ? "bg-[radial-gradient(circle_at_50%_50%,rgba(0,242,255,0.08),transparent_60%)]" : rarity === "ultra-rare" ? "bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.08),transparent_60%)]" : "bg-[radial-gradient(circle_at_50%_50%,rgba(234,179,8,0.05),transparent_60%)]"}`} />
                             )}
 
-                            <div className="relative group">
+                            <div className="relative group mb-6">
                                 <img
                                     src={card.images?.large || card.images?.small || ""}
                                     alt={card.name}
-                                    className="w-full max-w-[300px] rounded-2xl transition-transform duration-500 group-hover:scale-105"
+                                    className="w-full max-w-[280px] rounded-2xl transition-transform duration-500 group-hover:scale-105"
                                 />
-                                {/* Holographic overlay on hover */}
                                 {(rarity === "secret" || rarity === "ultra-rare") && (
                                     <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 bg-gradient-to-br from-cyan-400/20 via-purple-400/20 to-pink-400/20 mix-blend-overlay pointer-events-none" />
                                 )}
                             </div>
+
+                            {/* Pokédex Quick Info under image */}
+                            {pokedex && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                    className="relative z-10 w-full max-w-[280px] space-y-3"
+                                >
+                                    {/* Pokedex Number + Category */}
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-xl p-3 border border-white/5">
+                                        <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                                            <Hash className="w-5 h-5 text-red-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-lg font-mono font-black text-white">#{String(pokedex.pokedexNumber).padStart(3, "0")}</p>
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{pokedex.category}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Height & Weight */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="bg-white/5 rounded-xl p-3 border border-white/5 text-center">
+                                            <Ruler className="w-4 h-4 text-blue-400 mx-auto mb-1" />
+                                            <p className="text-sm font-mono font-bold text-white">{(pokedex.height / 10).toFixed(1)} m</p>
+                                            <p className="text-[9px] text-gray-600 uppercase tracking-widest font-bold">Altura</p>
+                                        </div>
+                                        <div className="bg-white/5 rounded-xl p-3 border border-white/5 text-center">
+                                            <Weight className="w-4 h-4 text-yellow-400 mx-auto mb-1" />
+                                            <p className="text-sm font-mono font-bold text-white">{(pokedex.weight / 10).toFixed(1)} kg</p>
+                                            <p className="text-[9px] text-gray-600 uppercase tracking-widest font-bold">Peso</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Generation */}
+                                    {pokedex.generation && (
+                                        <div className="text-center py-2">
+                                            <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg bg-legendary/10 text-legendary border border-legendary/20">
+                                                {generationNames[pokedex.generation] || pokedex.generation}
+                                            </span>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+
+                            {loadingPokedex && (
+                                <div className="relative z-10 flex items-center gap-2 text-gray-600 text-xs mt-4">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Cargando datos de Pokédex...
+                                </div>
+                            )}
                         </div>
 
                         {/* Right: Card Info */}
@@ -164,14 +349,19 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
                                     ))}
                                 </div>
 
-                                <h2 className="text-3xl font-black font-display tracking-tight mb-1">{card.name}</h2>
+                                <h2 className="text-3xl font-black font-display tracking-tight mb-1">
+                                    {card.name}
+                                    {pokedex && (
+                                        <span className="text-lg text-gray-600 font-mono ml-2">#{String(pokedex.pokedexNumber).padStart(3, "0")}</span>
+                                    )}
+                                </h2>
 
                                 <div className="flex items-center gap-3 text-sm text-gray-500">
                                     <span className="font-bold">{setData.name || "Set Desconocido"}</span>
-                                    {number && (
+                                    {cardNumber && (
                                         <>
                                             <span className="w-1 h-1 rounded-full bg-gray-700" />
-                                            <span className="font-mono">#{number}</span>
+                                            <span className="font-mono">#{cardNumber}</span>
                                         </>
                                     )}
                                     {hp && (
@@ -185,6 +375,76 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
                                     )}
                                 </div>
                             </div>
+
+                            {/* Pokédex Description */}
+                            {pokedex && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="bg-gradient-to-br from-red-500/5 to-transparent rounded-2xl border border-red-500/10 p-5"
+                                >
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <BookOpen className="w-4 h-4 text-red-400" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-red-400">Entrada Pokédex</span>
+                                    </div>
+                                    <p className="text-sm text-gray-300 leading-relaxed italic">
+                                        &ldquo;{pokedex.description}&rdquo;
+                                    </p>
+
+                                    {pokedex.funFact && pokedex.funFact !== pokedex.description && (
+                                        <div className="mt-4 pt-3 border-t border-white/5">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-yellow-400">Dato Interesante</span>
+                                            </div>
+                                            <p className="text-xs text-gray-400 leading-relaxed">
+                                                {pokedex.funFact}
+                                            </p>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+
+                            {/* Base Stats */}
+                            {pokedex && pokedex.baseStats.length > 0 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.4 }}
+                                >
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3 flex items-center gap-2">
+                                        <Shield className="w-3.5 h-3.5 text-blue-400" />
+                                        Estadísticas Base
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {pokedex.baseStats.map((stat) => (
+                                            <div key={stat.name} className="flex items-center gap-3">
+                                                <span className="text-[10px] font-bold text-gray-500 w-16 text-right shrink-0">
+                                                    {statLabels[stat.name] || stat.name}
+                                                </span>
+                                                <span className="text-xs font-mono font-bold text-white w-8 text-right shrink-0">
+                                                    {stat.value}
+                                                </span>
+                                                <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${(stat.value / maxStat) * 100}%` }}
+                                                        transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+                                                        className={`h-full rounded-full ${statColors[stat.name] || "bg-primary"}`}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <div className="flex items-center gap-3 pt-1 border-t border-white/5">
+                                            <span className="text-[10px] font-bold text-gray-400 w-16 text-right shrink-0">Total</span>
+                                            <span className="text-xs font-mono font-black text-primary w-8 text-right shrink-0">
+                                                {pokedex.baseStats.reduce((sum, s) => sum + s.value, 0)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
 
                             {/* Price */}
                             <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
@@ -324,7 +584,7 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
                             )}
 
                             {/* Footer Info */}
-                            <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                            <div className="flex flex-wrap items-center justify-between pt-4 border-t border-white/5 gap-3">
                                 {artist && (
                                     <p className="text-xs text-gray-600">
                                         Ilustrador: <span className="text-gray-400 font-bold">{artist}</span>
