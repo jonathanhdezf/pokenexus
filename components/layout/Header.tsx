@@ -14,9 +14,22 @@ export default function Header() {
     return (
         <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 h-20">
             <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-                <Link href="/" className="group flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-holographic animate-shimmer bg-[length:200%_auto] flex items-center justify-center">
-                        <span className="text-black font-black text-xl">N</span>
+                <Link href="/" className="group flex items-center gap-3">
+                    <div className="relative w-9 h-9 flex items-center justify-center">
+                        {/* Background Glow */}
+                        <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 scale-150" />
+
+                        {/* Pokeball Body */}
+                        <div className="relative w-8 h-8 rounded-full border-[2.5px] border-[#050608] bg-white overflow-hidden shadow-2xl transition-all duration-500 group-hover:rotate-[360deg] group-hover:scale-110 group-active:scale-95">
+                            {/* Top Half (Crimson Premium) */}
+                            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-br from-secondary to-secondary-dark border-b-[2.5px] border-[#050608]" />
+
+                            {/* Center Button */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white border-[2px] border-[#050608] rounded-full z-10 group-hover:shadow-[0_0_10px_#00f2ff] transition-all duration-500">
+                                {/* Inner Pulse */}
+                                <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse" />
+                            </div>
+                        </div>
                     </div>
                     <span className="text-xl font-black font-display tracking-tighter group-hover:text-primary transition-colors">
                         POKÉ<span className="text-primary italic">NEXUS</span>
