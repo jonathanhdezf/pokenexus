@@ -3,6 +3,7 @@ import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import NextAuthProvider from "@/components/auth/NextAuthProvider";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -24,7 +25,10 @@ export default function RootLayout({
                     <div className="absolute inset-0 bg-[url('/bg-noise.png')] opacity-5 pointer-events-none z-0"></div>
                     <div className="relative z-10 flex flex-col min-h-screen">
                         <Header />
-                        {children}
+                        <div className="flex-1">
+                            {children}
+                        </div>
+                        <Footer />
                     </div>
                 </NextAuthProvider>
             </body>
