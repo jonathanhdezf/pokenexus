@@ -43,7 +43,7 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
 
         // Play throw sound
         if (throwSfxRef.current) {
-            throwSfxRef.current.volume = 0.5;
+            throwSfxRef.current.volume = 0.8;
             throwSfxRef.current.play().catch(() => { });
         }
 
@@ -71,7 +71,7 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
 
             // Play capture sound on success
             if (catchSfxRef.current) {
-                catchSfxRef.current.volume = 0.5;
+                catchSfxRef.current.volume = 0.9;
                 catchSfxRef.current.play().catch(() => { });
             }
 
@@ -94,12 +94,12 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <audio
                         ref={throwSfxRef}
-                        src="https://www.myinstants.com/media/sounds/pokeball-throw_1.mp3"
+                        src="https://play.pokemonshowdown.com/audio/sfx/pokeballsign.mp3"
                         className="hidden"
                     />
                     <audio
                         ref={catchSfxRef}
-                        src="https://www.myinstants.com/media/sounds/pokeball-catch.mp3"
+                        src="https://archive.org/download/caught-a-pokemon/Caught%20a%20Pokemon%21.mp3"
                         className="hidden"
                     />
                     <motion.div

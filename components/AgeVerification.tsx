@@ -16,6 +16,17 @@ export default function AgeVerification() {
     }, []);
 
     const handleVerify = () => {
+        // Essential: Resume AudioContext on user interaction to unlock audio for the whole site
+        const AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
+        if (AudioContext) {
+            const audioCtx = new AudioContext();
+            audioCtx.resume().then(() => {
+                // Trigger a tiny silent sound to ensure playback is enabled
+                const silentAudio = new Audio("data:audio/wav;base64,UklGRjIAAABXQVZفن..."); // Silent wav
+                silentAudio.play().catch(() => { });
+            });
+        }
+
         localStorage.setItem("age-verified", "true");
         setIsVisible(false);
         document.body.style.overflow = "";

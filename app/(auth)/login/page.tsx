@@ -22,7 +22,7 @@ export default function LoginPage() {
     // Initial audio setup
     useEffect(() => {
         if (audioRef.current) {
-            audioRef.current.volume = 0.3;
+            audioRef.current.volume = 0.5;
             audioRef.current.loop = true;
         }
     }, []);
@@ -82,13 +82,13 @@ export default function LoginPage() {
             {/* Audio Element */}
             <audio
                 ref={audioRef}
-                src="https://ia800109.us.archive.org/27/items/Pokemon-Opening/01%20Pokemon%20Theme.mp3"
+                src="https://archive.org/download/Pokemon-Opening/01%20Pokemon%20Theme.mp3"
                 className="hidden"
                 muted={isMuted}
             />
             <audio
                 ref={sfxRef}
-                src="https://www.myinstants.com/media/sounds/pokeball-catch.mp3"
+                src="https://archive.org/download/caught-a-pokemon/Caught%20a%20Pokemon%21.mp3"
                 className="hidden"
             />
 
