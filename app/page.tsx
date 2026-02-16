@@ -58,7 +58,7 @@ export default function Home() {
 
                         <h1 className="text-6xl md:text-8xl font-black font-display leading-[0.9] mb-8">
                             EL NEXUS <br />
-                            <span className="text-transparent bg-clip-text bg-holographic animate-shimmer bg-[length:200%_auto]">PREMIUM</span> <br />
+                            <span className="text-holographic animate-shimmer">PREMIUM</span> <br />
                             <span className="text-white">DE TCG.</span>
                         </h1>
 

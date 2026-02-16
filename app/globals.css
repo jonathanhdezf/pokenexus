@@ -101,10 +101,9 @@ body {
   text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 
-/* Shimmer Animation */
+/* Shimmer Animation Only (no background override) */
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  background-size: 200% 100%;
+  animation: shine 3s infinite linear;
 }
 
 @keyframes shine {
@@ -115,4 +114,17 @@ body {
   100% {
     background-position: 200% 0;
   }
+}
+
+.text-holographic {
+  background: linear-gradient(135deg,
+      #00f2ff 0%,
+      #7d40ff 25%,
+      #ff0055 50%,
+      #7d40ff 75%,
+      #00f2ff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
