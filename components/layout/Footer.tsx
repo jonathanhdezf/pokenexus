@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Twitter, Instagram, Youtube, Tv } from "lucide-react";
+import { Github, Twitter, Instagram, Youtube, Tv, Download } from "lucide-react";
 
 export default function Footer() {
     return (
@@ -11,7 +11,7 @@ export default function Footer() {
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-                    <div className="col-span-1 md:col-span-2">
+                    <div className="col-span-1 md:col-span-1">
                         <Link href="/" className="group flex items-center gap-3 mb-6">
                             <div className="relative w-8 h-8 flex items-center justify-center">
                                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
@@ -24,11 +24,11 @@ export default function Footer() {
                                 POKÉ<span className="text-primary italic">NEXUS</span>
                             </span>
                         </Link>
-                        <p className="text-gray-500 max-w-sm leading-relaxed mb-8">
+                        <p className="text-gray-500 max-w-sm leading-relaxed mb-8 text-sm">
                             La plataforma de élite para el comercio, subasta y análisis de Pokémon TCG.
                             Elevando el coleccionismo a un nivel legendario.
                         </p>
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                             {[
                                 { icon: Github, href: "#" },
                                 { icon: Twitter, href: "#" },
@@ -68,8 +68,26 @@ export default function Footer() {
                                     Pokemon Streaming
                                 </Link>
                             </li>
+                            <li>
+                                <Link
+                                    href="/descargas"
+                                    className="group flex items-center gap-2 text-gray-500 hover:text-primary font-medium text-sm transition-colors"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    Descargas
+                                </Link>
+                            </li>
                             <li><Link href="/sell" className="text-gray-500 hover:text-primary transition-colors text-sm">Vender Cartas</Link></li>
                             <li><Link href="/settings" className="text-gray-500 hover:text-primary transition-colors text-sm">Configuración</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="text-white font-bold mb-6 font-display uppercase tracking-widest text-xs">Legal</h4>
+                        <ul className="space-y-4">
+                            <li><Link href="/nosotros" className="text-gray-500 hover:text-primary transition-colors text-sm">Nosotros</Link></li>
+                            <li><Link href="/privacidad" className="text-gray-500 hover:text-primary transition-colors text-sm">Privacidad</Link></li>
+                            <li><Link href="/terminos" className="text-gray-500 hover:text-primary transition-colors text-sm">Términos y Condiciones</Link></li>
                         </ul>
                     </div>
                 </div>
@@ -79,8 +97,9 @@ export default function Footer() {
                         © {new Date().getFullYear()} PokéNexus. Todos los derechos reservados.
                     </p>
                     <div className="flex gap-8">
-                        <Link href="/terms" className="text-gray-600 hover:text-gray-400 text-xs transition-colors">Términos y Condiciones</Link>
-                        <Link href="/privacy" className="text-gray-600 hover:text-gray-400 text-xs transition-colors">Privacidad</Link>
+                        <Link href="/terminos" className="text-gray-600 hover:text-gray-400 text-xs transition-colors">Términos y Condiciones</Link>
+                        <Link href="/privacidad" className="text-gray-600 hover:text-gray-400 text-xs transition-colors">Privacidad</Link>
+                        <Link href="/nosotros" className="text-gray-600 hover:text-gray-400 text-xs transition-colors">Nosotros</Link>
                     </div>
                 </div>
             </div>
