@@ -11,7 +11,7 @@ interface AudioContextType {
     isThemePlaying: boolean;
 }
 
-const AudioContext = createContext<AudioContextType | null>(null);
+const AudioEngineContext = createContext<AudioContextType | null>(null);
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     const [isUnlocked, setIsUnlocked] = useState(false);
@@ -20,16 +20,41 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     const themeOscillators = useRef<OscillatorNode[]>([]);
     const loopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Proactive Unlock: Attempt to unlock on ANY user interaction
+    useEffect(() => {
+        if (isUnlocked) return;
+
+        const handleInteraction = () => {
+            unlockAudio();
+        };
+
+        window.addEventListener("click", handleInteraction);
+        window.addEventListener("keydown", handleInteraction);
+        window.addEventListener("touchstart", handleInteraction);
+
+        return () => {
+            window.removeEventListener("click", handleInteraction);
+            window.removeEventListener("keydown", handleInteraction);
+            window.removeEventListener("touchstart", handleInteraction);
+        };
+    }, [isUnlocked]);
+
     const unlockAudio = () => {
         if (isUnlocked) return;
 
         const ContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-        if (ContextClass) {
-            const ctx = new ContextClass();
-            audioCtxRef.current = ctx;
+        if (!ContextClass) return;
 
-            // Resume context and play a silent buffer
+        if (!audioCtxRef.current) {
+            audioCtxRef.current = new ContextClass();
+        }
+
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
+
+        if (ctx.state === "suspended") {
             ctx.resume().then(() => {
+                // Play silent buffer to confirm unlock
                 const buffer = ctx.createBuffer(1, 1, 22050);
                 const source = ctx.createBufferSource();
                 source.buffer = buffer;
@@ -37,13 +62,20 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
                 source.start(0);
 
                 setIsUnlocked(true);
-                console.log("Audio Engine Unlocked 🚀");
+                console.log("Audio Engine Unlocked via Interaction 🚀");
             });
+        } else if (ctx.state === "running") {
+            setIsUnlocked(true);
         }
     };
 
     const playSFX = (url: string, volume: number = 0.5) => {
         // Fallback to Synthetic 8-bit sounds if local files fail or for immediate response
+        const ctx = audioCtxRef.current;
+        if (ctx && ctx.state === "suspended") {
+            unlockAudio();
+        }
+
         if (url.includes("login-success")) {
             playSyntheticSuccess();
             return;
@@ -121,7 +153,14 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
     const playSyntheticTheme = () => {
         const ctx = audioCtxRef.current;
-        if (!ctx || !isUnlocked) return;
+        if (!ctx) {
+            unlockAudio();
+            return;
+        }
+
+        if (ctx.state === "suspended") {
+            unlockAudio();
+        }
 
         const melody = [
             { f: 523.25, d: 0.4 }, { f: 587.33, d: 0.4 }, { f: 659.25, d: 0.4 }, { f: 783.99, d: 0.4 },
@@ -146,13 +185,15 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
         const totalDuration = melody.reduce((acc, n) => acc + n.d, 0);
         loopTimeoutRef.current = setTimeout(() => {
-            playSyntheticTheme();
+            if (isThemePlaying) playSyntheticTheme();
         }, totalDuration * 1000);
     };
 
     const playTheme = () => {
         setIsThemePlaying(true);
-        playSyntheticTheme();
+        setTimeout(() => {
+            playSyntheticTheme();
+        }, 50);
     };
 
     const stopTheme = () => {
@@ -168,14 +209,14 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AudioContext.Provider value={{ playSFX, playTheme, stopTheme, unlockAudio, isUnlocked, isThemePlaying }}>
+        <AudioEngineContext.Provider value={{ playSFX, playTheme, stopTheme, unlockAudio, isUnlocked, isThemePlaying }}>
             {children}
-        </AudioContext.Provider>
+        </AudioEngineContext.Provider>
     );
 };
 
 export const useAudio = () => {
-    const context = useContext(AudioContext);
+    const context = useContext(AudioEngineContext);
     if (!context) throw new Error("useAudio must be used within AudioProvider");
     return context;
 };
