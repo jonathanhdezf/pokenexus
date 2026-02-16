@@ -30,7 +30,7 @@ export default async function DashboardPage() {
         return acc + (Number(item.acquiredPrice) || 0);
     }, 0);
 
-    const uniqueSets = new Set(user.collection.map(item => item.card.setName)).size;
+    const uniqueSets = new Set(user.collection.map(item => item.card.set)).size;
 
     return (
         <main className="min-h-screen pt-24 px-6 max-w-7xl mx-auto pb-20 relative">
@@ -190,7 +190,7 @@ export default async function DashboardPage() {
                                                     {item.condition}
                                                 </span>
                                                 <p className="text-white font-bold text-sm leading-tight">{item.card.name}</p>
-                                                <p className="text-gray-400 text-[10px] mt-1">{item.card.setName}</p>
+                                                <p className="text-gray-400 text-[10px] mt-1">{item.card.set}</p>
                                             </div>
                                         </div>
                                         {/* Holo effect on hover */}
