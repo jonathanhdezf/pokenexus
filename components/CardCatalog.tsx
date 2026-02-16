@@ -127,32 +127,14 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
 
     return (
         <>
-            {/* Search Bar (used in Hero) */}
-            <div className="relative group max-w-md">
-                <input
-                    type="text"
-                    placeholder="Busca Charizard, Mewtwo, Umbreon..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-gray-500 focus:outline-none focus:border-primary/50 transition-all font-medium pr-12"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
-                <button
-                    onClick={handleSearch}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition-colors"
-                >
-                    <Search className="w-5 h-5" />
-                </button>
-            </div>
-
-            {/* Catalog Section - rendered separately below hero */}
+            {/* Catalog Section */}
             <section className="w-full px-6 py-32 border-t border-white/5 relative bg-black/20 overflow-hidden" id="catalog-section">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
                         <div>
-                            <h2 className="text-4xl md:text-5xl font-black mb-4 font-display flex items-center gap-4">
+                            <h2 className="text-4xl md:text-5xl font-black mb-4 font-display flex items-center gap-4 flex-wrap">
                                 {executedSearchTerm
                                     ? `RESULTADOS PARA "${executedSearchTerm.toUpperCase()}"`
                                     : selectedType
@@ -183,6 +165,27 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                             <Link href="/marketplace" className="px-6 py-2 rounded-full border border-white/10 text-sm font-bold text-gray-400 hover:text-primary hover:border-primary/50 transition-all flex items-center gap-2 group">
                                 Ver Catálogo Completo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
+                        </div>
+                    </div>
+
+                    {/* Search Bar */}
+                    <div className="relative group max-w-lg mb-8">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-legendary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative flex items-center">
+                            <input
+                                type="text"
+                                placeholder="🔍 Busca Charizard, Mewtwo, Umbreon..."
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-gray-500 focus:outline-none focus:border-primary/50 transition-all font-medium pr-24"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                            <button
+                                onClick={handleSearch}
+                                className="absolute right-2 px-5 py-2 rounded-xl bg-primary/20 text-primary hover:bg-primary/30 transition-colors text-sm font-black uppercase tracking-wider"
+                            >
+                                Buscar
+                            </button>
                         </div>
                     </div>
 
