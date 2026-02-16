@@ -20,63 +20,59 @@ export default function Home() {
         if (!isInitial) setExecutedSearchTerm(query);
 
         try {
-            let q = "";
-            if (isInitial) {
-                // Query simple que garantiza resultados raras
-                q = 'name:Pikachu';
-            } else {
-                const cleanQuery = query.trim();
-                if (!cleanQuery) {
-                    setIsLoading(false);
-                    return;
-                }
-                q = `name:"${cleanQuery}*"`;
-            }
-
+            // Sintaxis v2: name:pikachu o name:"pikachu"
+            const q = isInitial ? "name:pikachu" : `name:"${query.trim()}*"`;
             const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=6`;
 
+            console.log("Nexus Fetching:", url);
+
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`Status: ${response.status}`);
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`API ${response.status}: ${errText}`);
+            }
 
             const data = await response.json();
+            console.log("Nexus Data Received:", data.data?.length, "cards");
             setCards(data.data || []);
         } catch (error: any) {
-            console.error("Nexus Dev Error:", error);
+            console.error("Nexus Critical Error:", error);
             setCards([]);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Al montar, cargamos las cartas destacadas iniciales (modo aleatorio de rareza alta)
+    // Al montar, cargamos las cartas destacadas iniciales
     useEffect(() => {
         handleSearch("", true);
     }, []);
 
     const getMarketPrice = (card: any) => {
-        // Lógica de Programador Senior para extraer el valor de mercado más realista
-        // Prioridad: TCGPlayer Market (Holofoil -> Normal) -> Cardmarket Average -> "Consultar"
+        if (!card) return "N/A";
         const tcg = card.tcgplayer?.prices;
         const cm = card.cardmarket?.prices;
 
-        if (tcg) {
-            const val = tcg.holofoil?.market || tcg.normal?.market || tcg.unlimitedHolofoil?.market;
-            if (val) return `$${val.toFixed(2)}`;
+        try {
+            if (tcg) {
+                const val = tcg.holofoil?.market || tcg.normal?.market || tcg.unlimitedHolofoil?.market || tcg.reverseHolofoil?.market;
+                if (val) return `$${val.toFixed(2)}`;
+            }
+            if (cm) {
+                const val = cm.averageSellPrice || cm.trendPrice || cm.lowPrice;
+                if (val) return `$${val.toFixed(2)}`;
+            }
+        } catch (e) {
+            return "CONSULTAR";
         }
-
-        if (cm) {
-            const val = cm.averageSellPrice || cm.trendPrice;
-            if (val) return `$${val.toFixed(2)}`;
-        }
-
         return "CONSULTAR";
     };
 
     const mapRarity = (rarity: string): "common" | "rare" | "ultra-rare" | "secret" => {
         const r = rarity?.toLowerCase() || "";
-        if (r.includes("secret")) return "secret";
-        if (r.includes("vmax") || r.includes("vstar") || r.includes("ultra")) return "ultra-rare";
-        if (r.includes("rare")) return "rare";
+        if (r.includes("secret") || r.includes("rainbow") || r.includes("hyper")) return "secret";
+        if (r.includes("vmax") || r.includes("vstar") || r.includes("ultra") || r.includes("v-") || r.includes("full art")) return "ultra-rare";
+        if (r.includes("rare") || r.includes("holo")) return "rare";
         return "common";
     };
 
@@ -208,9 +204,9 @@ export default function Home() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 min-h-[400px]">
                         <AnimatePresence mode="popLayout">
-                            {cards.map((card, i) => (
+                            {cards && cards.length > 0 && cards.map((card, i) => (
                                 <motion.div
-                                    key={card.id}
+                                    key={card.id || i}
                                     layout
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -219,17 +215,17 @@ export default function Home() {
                                 >
                                     <InteractiveCard
                                         id={card.id}
-                                        name={card.name}
-                                        set={card.set.name}
+                                        name={card.name || "Unknown"}
+                                        set={card.set?.name || "Unknown Set"}
                                         price={getMarketPrice(card)}
-                                        imageUrl={card.images.large}
+                                        imageUrl={card.images?.large || card.images?.small || ""}
                                         rarity={mapRarity(card.rarity)}
                                     />
                                 </motion.div>
                             ))}
                         </AnimatePresence>
 
-                        {!isLoading && cards.length === 0 && (
+                        {!isLoading && (!cards || cards.length === 0) && (
                             <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
                                 <Search className="w-12 h-12 mb-4 opacity-20" />
                                 <p className="text-xl font-display uppercase tracking-widest">No se encontraron cartas</p>
