@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Search, Loader2 } from "lucide-react";
 import InteractiveCard from "@/components/InteractiveCard";
+import CardDetailModal from "@/components/CardDetailModal";
 import { motion, AnimatePresence } from "framer-motion";
 
 const POKEMON_TYPES = [
@@ -49,6 +50,17 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
     const [page, setPage] = useState(1);
     const [apiError, setApiError] = useState<string | null>(null);
     const [visibleCount, setVisibleCount] = useState(10);
+    const [selectedCard, setSelectedCard] = useState<any | null>(null);
+
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (selectedCard) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
+    }, [selectedCard]);
 
     const fetchCards = async (query = "", pageNum = 1, type = selectedType) => {
         setIsLoading(true);
@@ -223,6 +235,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                                         price={getMarketPrice(card)}
                                         imageUrl={card.images?.large || card.images?.small || ""}
                                         rarity={mapRarity(card.rarity)}
+                                        onClick={() => setSelectedCard(card)}
                                     />
                                 </motion.div>
                             ))}
@@ -249,6 +262,14 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                     )}
                 </div>
             </section>
+
+            {/* Card Detail Modal */}
+            {selectedCard && (
+                <CardDetailModal
+                    card={selectedCard}
+                    onClose={() => setSelectedCard(null)}
+                />
+            )}
         </>
     );
 }
