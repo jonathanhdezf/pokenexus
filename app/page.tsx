@@ -1,53 +1,42 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Flame, Search, TrendingUp, ShieldCheck } from "lucide-react";
+import { ArrowRight, Search, TrendingUp, ShieldCheck, Loader2 } from "lucide-react";
 import InteractiveCard from "@/components/InteractiveCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
-    const featuredCards = [
-        {
-            id: 1,
-            name: "Ultra Pro Penny Sleeves",
-            set: "Protection Essentials",
-            price: "$2.99",
-            imageUrl: "https://m.media-amazon.com/images/I/61+7Xr-VqGL._AC_SL1000_.jpg",
-            rarity: "common" as const,
-        },
-        {
-            id: 2,
-            name: "Tech Sticker: Gengar",
-            set: "Ascended Heroes",
-            price: "$15.99",
-            imageUrl: "https://images.pokemontcg.io/swsh8/271_hires.png",
-            rarity: "rare" as const,
-        },
-        {
-            id: 3,
-            name: "Marnie Premium Coin",
-            set: "Champion's Path",
-            price: "$4.50",
-            imageUrl: "https://images.pokemontcg.io/swsh3/169_hires.png",
-            rarity: "rare" as const,
-        },
-        {
-            id: 4,
-            name: "Mega Dream ex Box",
-            set: "Japanese Exclusive",
-            price: "$85.00",
-            imageUrl: "https://product-images.tcgplayer.com/fit-in/437x437/484988.jpg",
-            rarity: "ultra-rare" as const,
-        },
-        {
-            id: 5,
-            name: "Phantasmal Flames Pack",
-            set: "Mega Evolution",
-            price: "$4.99",
-            imageUrl: "https://images.pokemontcg.io/xy2/pack_charizard_hires.png",
-            rarity: "common" as const,
-        },
-    ];
+    const [searchTerm, setSearchTerm] = useState("");
+    const [cards, setCards] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Fetch initial trending cards
+    useEffect(() => {
+        handleSearch("rarity:\"Rare Holo VMAX\"");
+    }, []);
+
+    const handleSearch = async (query: string) => {
+        setIsLoading(true);
+        try {
+            const q = query || "rarity:\"Rare Holo VMAX\"";
+            const response = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"*${q}*"&pageSize=6`);
+            const data = await response.json();
+            setCards(data.data || []);
+        } catch (error) {
+            console.error("Error fetching cards:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const mapRarity = (rarity: string): "common" | "rare" | "ultra-rare" | "secret" => {
+        const r = rarity?.toLowerCase() || "";
+        if (r.includes("secret")) return "secret";
+        if (r.includes("vmax") || r.includes("vstar") || r.includes("ultra")) return "ultra-rare";
+        if (r.includes("rare")) return "rare";
+        return "common";
+    };
 
     return (
         <main className="flex flex-col min-h-screen bg-nexus">
@@ -68,7 +57,7 @@ export default function Home() {
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6 group cursor-default">
                             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-primary transition-colors">
-                                Acceso Beta ya Abierto
+                                Marketplace Tiempo Real
                             </span>
                         </div>
 
@@ -79,23 +68,25 @@ export default function Home() {
                         </h1>
 
                         <p className="text-xl text-gray-400 mb-10 max-w-lg leading-relaxed">
-                            La plataforma definitiva para coleccionistas de élite. <br className="hidden md:block" />
-                            Compra, vende y analiza cartas con <span className="text-white font-medium">datos de mercado en tiempo real</span>.
+                            Accede a la base de datos más grande del mundo. <br className="hidden md:block" />
+                            Consulta precios reales, rarezas y <span className="text-white font-medium">disponibilidad global</span>.
                         </p>
 
-                        <div className="flex flex-wrap gap-4">
-                            <Link
-                                href="/marketplace"
-                                className="px-8 py-4 bg-primary text-black font-black uppercase tracking-wider rounded-xl hover:bg-cyan-400 transition-all transform hover:scale-105 active:scale-95 shadow-2xl shadow-primary/30"
+                        <div className="relative group max-w-md">
+                            <input
+                                type="text"
+                                placeholder="Busca Charizard, Mewtwo, Umbreon..."
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-gray-500 focus:outline-none focus:border-primary/50 transition-all font-medium pr-12"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchTerm)}
+                            />
+                            <button
+                                onClick={() => handleSearch(searchTerm)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition-colors"
                             >
-                                Explorar Mercado
-                            </Link>
-                            <Link
-                                href="/auctions"
-                                className="px-8 py-4 bg-white/5 text-white font-black uppercase tracking-wider rounded-xl hover:bg-white/10 border border-white/10 transition-all transform hover:scale-105 active:scale-95 backdrop-blur-md"
-                            >
-                                Ver Subastas
-                            </Link>
+                                <Search className="w-5 h-5" />
+                            </button>
                         </div>
                     </motion.div>
 
@@ -106,10 +97,7 @@ export default function Home() {
                         className="relative flex justify-center lg:justify-end"
                     >
                         <div className="relative w-[320px] md:w-[450px] aspect-[3/4] animate-float">
-                            {/* Decorative Glow */}
                             <div className="absolute inset-0 bg-primary/30 blur-[60px] rounded-[40px] opacity-50" />
-
-                            {/* Main Card Image Overlay */}
                             <div className="absolute inset-0 glass-premium rounded-[32px] p-4 flex flex-col justify-end overflow-hidden group cursor-pointer shadow-2xl">
                                 <div className="absolute inset-0 bg-[url('https://images.pokemontcg.io/swsh7/215_hires.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
@@ -135,9 +123,9 @@ export default function Home() {
             {/* Features Grid */}
             <section className="w-full max-w-7xl mx-auto px-6 py-32 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                 {[
-                    { icon: TrendingUp, title: "Valores en Vivo", desc: "Accede instantáneamente a datos de ventas verificados de las casas de subastas más prestigiosas." },
-                    { icon: ShieldCheck, title: "Certificación Elite", desc: "Cada carta es verificada mediante nuestro proceso de autenticación digital avanzada." },
-                    { icon: Search, title: "Análisis de Portafolio", desc: "Rastrea el valor histórico de tu colección con herramientas de análisis de nivel profesional." }
+                    { icon: TrendingUp, title: "Datos Reales", desc: "Sincronizado directamente con la API oficial de Pokémon TCG para precios y specs." },
+                    { icon: ShieldCheck, title: "Filtros Avanzados", desc: "Encuentra cualquier carta por set, rareza o tipo de ataque con precisión quirúrgica." },
+                    { icon: Search, title: "Tendencias Globales", desc: "Visualiza que cartas están subiendo de precio en tiempo real en los mercados internacionales." }
                 ].map((feature, i) => (
                     <motion.div
                         key={i}
@@ -156,40 +144,55 @@ export default function Home() {
                 ))}
             </section>
 
-            {/* Trending Section */}
+            {/* Dynamic Card Gallery Section */}
             <section className="w-full px-6 py-32 border-t border-white/5 relative bg-black/20 overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div>
-                            <h2 className="text-4xl md:text-5xl font-black mb-4 font-display">TENDENCIAS DE HOY</h2>
-                            <p className="text-gray-400">Las piezas más codiciadas que se mueven en el mercado global.</p>
+                            <h2 className="text-4xl md:text-5xl font-black mb-4 font-display">
+                                {searchTerm ? `RESULTADOS PARA "${searchTerm.toUpperCase()}"` : "CARTAS DESTACADAS"}
+                            </h2>
+                            <p className="text-gray-400">Datos verificados en tiempo real por el Nexus.</p>
                         </div>
-                        <Link href="/marketplace" className="px-6 py-2 rounded-full border border-white/10 text-sm font-bold text-gray-400 hover:text-primary hover:border-primary/50 transition-all flex items-center gap-2 group">
-                            Ver Todo el Mercado <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Link>
+                        <div className="flex items-center gap-4">
+                            {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
+                            <Link href="/marketplace" className="px-6 py-2 rounded-full border border-white/10 text-sm font-bold text-gray-400 hover:text-primary hover:border-primary/50 transition-all flex items-center gap-2 group">
+                                Ver Catálogo Completo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        {featuredCards.map((card, i) => (
-                            <motion.div
-                                key={card.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                viewport={{ once: true }}
-                            >
-                                <InteractiveCard
-                                    id={card.id.toString()}
-                                    name={card.name}
-                                    set={card.set}
-                                    price={card.price}
-                                    imageUrl={card.imageUrl}
-                                    rarity={card.rarity}
-                                />
-                            </motion.div>
-                        ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 min-h-[400px]">
+                        <AnimatePresence mode="popLayout">
+                            {cards.map((card, i) => (
+                                <motion.div
+                                    key={card.id}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.4, delay: i * 0.05 }}
+                                >
+                                    <InteractiveCard
+                                        id={card.id}
+                                        name={card.name}
+                                        set={card.set.name}
+                                        price={card.cardmarket?.prices?.averageSellPrice ? `$${card.cardmarket.prices.averageSellPrice}` : "N/A"}
+                                        imageUrl={card.images.large}
+                                        rarity={mapRarity(card.rarity)}
+                                    />
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+
+                        {!isLoading && cards.length === 0 && (
+                            <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
+                                <Search className="w-12 h-12 mb-4 opacity-20" />
+                                <p className="text-xl font-display uppercase tracking-widest">No se encontraron cartas</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
