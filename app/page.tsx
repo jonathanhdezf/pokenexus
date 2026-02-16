@@ -3,25 +3,39 @@ import { ArrowRight, Search, TrendingUp, ShieldCheck } from "lucide-react";
 import CardCatalog from "@/components/CardCatalog";
 
 // Función que corre en el SERVIDOR (no en el navegador del usuario)
+// Trae 150 cartas en 3 peticiones paralelas de 50 para máxima velocidad
 async function getInitialCards() {
-    try {
-        const res = await fetch(
-            "https://api.pokemontcg.io/v2/cards?q=supertype:pokemon&pageSize=12&page=1&orderBy=-set.releaseDate",
-            {
-                headers: {
-                    "X-Api-Key": "7878696b-1667-4581-9f9b-648439d56285",
-                    Accept: "application/json",
-                },
-                next: { revalidate: 120 }, // Cache por 2 min en servidor
-            }
-        );
+    const headers = {
+        "X-Api-Key": "7878696b-1667-4581-9f9b-648439d56285",
+        Accept: "application/json",
+    };
+    const baseUrl = "https://api.pokemontcg.io/v2/cards?q=supertype:pokemon&pageSize=50&orderBy=-set.releaseDate";
 
-        if (!res.ok) throw new Error(`API ${res.status}`);
-        const data = await res.json();
-        return data.data || [];
+    try {
+        // 3 páginas en paralelo = 150 cartas
+        const [res1, res2, res3] = await Promise.all([
+            fetch(`${baseUrl}&page=1`, { headers, next: { revalidate: 300 } }),
+            fetch(`${baseUrl}&page=2`, { headers, next: { revalidate: 300 } }),
+            fetch(`${baseUrl}&page=3`, { headers, next: { revalidate: 300 } }),
+        ]);
+
+        const results = await Promise.all([
+            res1.ok ? res1.json() : { data: [] },
+            res2.ok ? res2.json() : { data: [] },
+            res3.ok ? res3.json() : { data: [] },
+        ]);
+
+        const allCards = [
+            ...(results[0].data || []),
+            ...(results[1].data || []),
+            ...(results[2].data || []),
+        ];
+
+        if (allCards.length > 0) return allCards;
+        throw new Error("No cards returned");
     } catch (e) {
         console.error("Server fetch failed:", e);
-        // Fallback offline con cartas conocidas
+        // Fallback offline mínimo
         return [
             {
                 id: "swsh12pt5-160",

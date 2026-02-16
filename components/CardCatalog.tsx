@@ -63,13 +63,13 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
 
             const q = queryParts.join(" ");
             // Intentamos primero el proxy local, si falla, directo a la API
-            let url = `/api/pokemon?q=${encodeURIComponent(q)}&pageSize=12&page=${pageNum}&orderBy=-set.releaseDate`;
+            let url = `/api/pokemon?q=${encodeURIComponent(q)}&pageSize=50&page=${pageNum}&orderBy=-set.releaseDate`;
 
             let response = await fetch(url).catch(() => null);
 
             // Si el proxy falla (404 o error de red), intentamos directo
             if (!response || !response.ok) {
-                url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=12&page=${pageNum}&orderBy=-set.releaseDate`;
+                url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=50&page=${pageNum}&orderBy=-set.releaseDate`;
                 response = await fetch(url, {
                     headers: { 'Accept': 'application/json' }
                 });
@@ -143,12 +143,17 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div>
-                            <h2 className="text-4xl md:text-5xl font-black mb-4 font-display">
+                            <h2 className="text-4xl md:text-5xl font-black mb-4 font-display flex items-center gap-4">
                                 {executedSearchTerm
                                     ? `RESULTADOS PARA "${executedSearchTerm.toUpperCase()}"`
                                     : selectedType
                                         ? `CARTAS TIPO ${selectedType.toUpperCase()}`
                                         : "CATÁLOGO NEXUS"}
+                                {cards.length > 0 && (
+                                    <span className="text-sm font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                                        {cards.length} cartas
+                                    </span>
+                                )}
                             </h2>
                             <p className="text-gray-400 flex items-center gap-3">
                                 {apiError ? (
@@ -179,8 +184,8 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                                 key={type}
                                 onClick={() => handleFilterChange(type)}
                                 className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${selectedType === type
-                                        ? "bg-primary text-nexus border-primary shadow-[0_0_20px_rgba(0,184,212,0.4)]"
-                                        : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:bg-white/10"
+                                    ? "bg-primary text-nexus border-primary shadow-[0_0_20px_rgba(0,184,212,0.4)]"
+                                    : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:bg-white/10"
                                     }`}
                             >
                                 {type}
@@ -188,7 +193,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 min-h-[400px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 min-h-[400px]">
                         <AnimatePresence mode="popLayout">
                             {cards && cards.length > 0 && cards.map((card, i) => (
                                 <motion.div
@@ -197,7 +202,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.4, delay: i * 0.05 }}
+                                    transition={{ duration: 0.3, delay: Math.min(i * 0.02, 0.5) }}
                                 >
                                     <InteractiveCard
                                         id={card.id}
@@ -219,7 +224,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                         )}
                     </div>
 
-                    {cards && cards.length > 0 && cards.length % 12 === 0 && (
+                    {cards && cards.length > 0 && cards.length % 50 === 0 && (
                         <div className="mt-20 flex justify-center">
                             <button
                                 onClick={loadMore}
