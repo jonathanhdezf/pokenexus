@@ -48,6 +48,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [apiError, setApiError] = useState<string | null>(null);
+    const [visibleCount, setVisibleCount] = useState(50);
 
     const fetchCards = async (query = "", pageNum = 1, type = selectedType) => {
         setIsLoading(true);
@@ -118,10 +119,11 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
     };
 
     const loadMore = () => {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        fetchCards(executedSearchTerm, nextPage);
+        setVisibleCount(prev => prev + 50);
     };
+
+    const visibleCards = cards.slice(0, visibleCount);
+    const hasMore = visibleCount < cards.length;
 
     return (
         <>
@@ -158,7 +160,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                                         : "CATÁLOGO NEXUS"}
                                 {cards.length > 0 && (
                                     <span className="text-sm font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                                        {cards.length} cartas
+                                        {Math.min(visibleCount, cards.length)} / {cards.length} cartas
                                     </span>
                                 )}
                             </h2>
@@ -202,7 +204,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 min-h-[400px]">
                         <AnimatePresence mode="popLayout">
-                            {cards && cards.length > 0 && cards.map((card, i) => (
+                            {visibleCards.length > 0 && visibleCards.map((card, i) => (
                                 <motion.div
                                     key={card.id || i}
                                     layout
@@ -231,20 +233,14 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                         )}
                     </div>
 
-                    {cards && cards.length > 0 && cards.length % 50 === 0 && (
-                        <div className="mt-20 flex justify-center">
+                    {hasMore && (
+                        <div className="mt-20 flex flex-col items-center gap-4">
+                            <p className="text-gray-500 text-sm">Mostrando {Math.min(visibleCount, cards.length)} de {cards.length} cartas</p>
                             <button
                                 onClick={loadMore}
-                                disabled={isLoading}
-                                className="px-12 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-primary/20 hover:border-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed group flex items-center gap-4"
+                                className="px-12 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-primary/20 hover:border-primary/50 transition-all group flex items-center gap-4"
                             >
-                                {isLoading ? (
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                    <>
-                                        Cargar más cartas <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                                    </>
-                                )}
+                                Cargar más cartas <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                             </button>
                         </div>
                     )}
