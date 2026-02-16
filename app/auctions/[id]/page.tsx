@@ -50,6 +50,7 @@ export default async function AuctionDetailPage({ params }: { params: { id: stri
                     name: listing.card.name,
                     imageUrl: cardImage || "",
                     set: listing.card.set,
+                    // Ensure string type for strict mode
                     rarity: listing.card.rarity || "Unknown",
                     condition: listing.condition
                 }}
