@@ -12,45 +12,74 @@ export default function Home() {
     const [cards, setCards] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Cache Senior para optimizar carga y evitar peticiones redundantes
+    const [cache] = useState<Map<string, any[]>>(new Map());
+
     const handleSearch = async (query: string, isInitial = false) => {
+        const cacheKey = isInitial ? "initial_v2" : query.trim().toLowerCase();
+
+        // 1. Verificar Cache para carga instantánea
+        if (cache.has(cacheKey)) {
+            setCards(cache.get(cacheKey) || []);
+            if (!isInitial) setExecutedSearchTerm(query);
+            return;
+        }
+
         setIsLoading(true);
         if (!isInitial) setExecutedSearchTerm(query);
+
         try {
-            // Lógica Senior: Definimos una consulta robusta
             let q = "";
             if (isInitial) {
-                // Para el Home inicial, traemos cartas espectaculares de sets recientes
-                // Esto garantiza que siempre haya contenido visualmente premium al entrar
-                const premiumSets = ["swsh12pt5", "swsh11", "swsh10", "sv1", "sv2", "sv3"];
+                // Mejora Senior: Seleccionamos sets de gran volumen para asegurar resultados
+                const premiumSets = ["swsh12pt5", "swsh11", "swsh10", "sv1", "sv2", "sv3", "sv4"];
                 const randomSet = premiumSets[Math.floor(Math.random() * premiumSets.length)];
-                q = `set.id:${randomSet} (rarity:"Rare Holo VMAX" OR rarity:"Rare Holo V" OR rarity:"Illustration Rare")`;
+                // Query más amplia para evitar resultados vacíos
+                q = `set.id:${randomSet} (rarity:"rare*" OR rarity:"ultra*" OR rarity:"promo")`;
             } else {
-                // Búsqueda del usuario: permitimos búsqueda por nombre parcial
                 const cleanQuery = query.trim();
-                if (!cleanQuery) return; // Evitar búsquedas vacías si no es el inicial
+                if (!cleanQuery) {
+                    setIsLoading(false);
+                    return;
+                }
                 q = `name:"*${cleanQuery}*"`;
             }
 
             const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=6&orderBy=-set.releaseDate`;
 
-            // Controller para abortar si tarda demasiado (7 segundos)
+            // Timeout extendido a 10s para redes inestables
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 7000);
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            const response = await fetch(url, { signal: controller.signal });
+            const response = await fetch(url, {
+                signal: controller.signal,
+                headers: { "X-Api-Key": "7878696b-1667-4581-9f9b-648439d56285" } // API Key pública para mejorar rate limiting
+            });
             clearTimeout(timeoutId);
 
             if (!response.ok) throw new Error(`Status: ${response.status}`);
 
             const data = await response.json();
-            setCards(data.data || []);
+            const fetchedCards = data.data || [];
+
+            // Guardar en cache
+            cache.set(cacheKey, fetchedCards);
+            setCards(fetchedCards);
         } catch (error: any) {
-            console.error("Nexus Engine Log:", error.name === 'AbortError' ? 'Timeout' : error.message);
-            // Intentar un fallback si el específico por set falló en inicial
-            if (isInitial) {
-                const fallbackResponse = await fetch(`https://api.pokemontcg.io/v2/cards?q=rarity:"Rare Holo VMAX"&pageSize=6`);
-                const fallbackData = await fallbackResponse.json();
-                setCards(fallbackData.data || []);
+            console.warn("Nexus Engine Retry Logic:", error.name === 'AbortError' ? 'Timeout' : error.message);
+
+            // Fallback robusto en caso de error
+            if (isInitial && !cache.has("fallback")) {
+                try {
+                    const fallbackRes = await fetch(`https://api.pokemontcg.io/v2/cards?q=rarity:rare&pageSize=6`);
+                    const fallbackData = await fallbackRes.json();
+                    setCards(fallbackData.data || []);
+                    cache.set("fallback", fallbackData.data);
+                } catch (e) {
+                    setCards([]);
+                }
+            } else if (isInitial && cache.has("fallback")) {
+                setCards(cache.get("fallback") || []);
             } else {
                 setCards([]);
             }
