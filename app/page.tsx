@@ -36,16 +36,17 @@ export default function Home() {
 
             const qString = `q=${encodeURIComponent(queryParts.join(" "))}`;
             const pageParam = `pageSize=12&page=${pageNum}`;
-            const url = `https://api.pokemontcg.io/v2/cards?${qString}&${pageParam}&orderBy=-set.releaseDate`;
 
-            console.log("Nexus Engine -> Contacting:", url);
+            // Usamos nuestro proxy interno para evitar bloqueos del navegador (Adblock/CORS)
+            const url = `/api/pokemon?${qString}&${pageParam}&orderBy=-set.releaseDate`;
 
-            const response = await fetch(url, {
-                cache: 'no-store',
-                headers: { 'Accept': 'application/json' }
-            });
+            console.log("Nexus Engine -> Using Server Proxy:", url);
 
-            if (!response.ok) throw new Error(`HTTP ${response.status}: Error de conexión con el servidor TCG`);
+            const response = await fetch(url);
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || `Status ${response.status}`);
+            }
 
             const data = await response.json();
             const results = data.data || [];
