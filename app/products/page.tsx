@@ -133,6 +133,39 @@ export default function ProductsPage() {
                 ))}
             </div>
 
+            {/* Popular Section */}
+            <section className="mt-20">
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-3xl font-bold font-display">Tendencias en Pokémon</h2>
+                    <Link href="/marketplace" className="text-primary hover:text-cyan-400 font-bold flex items-center gap-1 transition-colors">
+                        Ver todo el mercado <ArrowRight className="w-4 h-4" />
+                    </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Mocked Trending Items */}
+                    {[
+                        { id: "1", name: "Charizard VMAX", set: "Shining Fates", price: "$120.00", rarity: "secret", img: "https://images.pokemontcg.io/swsh45sv/SV107_hires.png" },
+                        { id: "2", name: "Umbreon VMAX", set: "Evolving Skies", price: "$650.00", rarity: "secret", img: "https://images.pokemontcg.io/swsh7/215_hires.png" },
+                        { id: "3", name: "Pikachu V", set: "Celebrations", price: "$45.00", rarity: "ultra-rare", img: "https://images.pokemontcg.io/cel25/25_hires.png" },
+                        { id: "4", name: "Lugia V", set: "Silver Tempest", price: "$180.00", rarity: "ultra-rare", img: "https://images.pokemontcg.io/swsh12/186_hires.png" }
+                    ].map((item) => (
+                        <div key={item.id} className="group">
+                            <div className="bg-surface border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:border-primary/30 hover:-translate-y-2">
+                                <div className="aspect-[3/4] relative rounded-xl overflow-hidden bg-black mb-4">
+                                    <img src={item.img} alt={item.name} className="w-full h-full object-contain" />
+                                </div>
+                                <h4 className="font-bold text-white mb-1 truncate">{item.name}</h4>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-500">{item.set}</span>
+                                    <span className="text-primary font-mono font-bold">{item.price}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Featured Banner / CTA */}
             <motion.section
                 initial={{ opacity: 0, scale: 0.95 }}

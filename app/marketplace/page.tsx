@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import InteractiveCard from "@/components/InteractiveCard";
 import MarketFilters from "@/components/marketplace/MarketFilters";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -8,11 +9,23 @@ interface Props {
     searchParams: {
         q?: string;
         sort?: string;
+        category?: string;
     };
 }
 
 export default async function MarketplacePage({ searchParams }: Props) {
-    const { q, sort } = searchParams;
+    const { q, sort, category } = searchParams;
+
+    // Mapping category IDs to readable names
+    const categoryNames: Record<string, string> = {
+        singles: "Cartas sueltas",
+        packs: "Sobres",
+        boxes: "Caja de Sobres",
+        sealed: "Productos Sellados",
+        sets: "Sets",
+        lots: "Lotes y colecciones",
+        accessories: "Accesorios"
+    };
 
     // Build the where clause for search
     const where: any = {};
@@ -24,11 +37,8 @@ export default async function MarketplacePage({ searchParams }: Props) {
         ];
     }
 
-    // Build the orderBy clause
-    let orderBy: any = { createdAt: 'desc' }; // Default
-    if (sort === 'price_desc') orderBy = { marketPrices: { _count: 'desc' } }; // This is tricky with Prisma relations
-    // Simplified for now: just basic sorting if direct fields exist. 
-    // For price sorting we'd ideally have a currentPrice field or a more complex query.
+    // In a real app, we'd filter by category in the DB
+    // for this demo, we'll just show the category name if present
 
     const cards = await prisma.cardCatalog.findMany({
         where,
@@ -54,9 +64,18 @@ export default async function MarketplacePage({ searchParams }: Props) {
     return (
         <main className="min-h-screen pt-24 px-6 max-w-7xl mx-auto pb-20">
             <div className="mb-12">
-                <h1 className="text-5xl font-bold mb-4 font-display">Mercado</h1>
+                <div className="flex items-center gap-2 mb-4">
+                    <Link href="/products" className="text-primary hover:underline text-sm font-bold">Productos</Link>
+                    <span className="text-gray-600 text-sm">/</span>
+                    <span className="text-gray-400 text-sm">{category ? categoryNames[category as string] : "Todos"}</span>
+                </div>
+                <h1 className="text-5xl font-bold mb-4 font-display">
+                    {category ? categoryNames[category as string] : "Mercado"}
+                </h1>
                 <p className="text-gray-400 max-w-xl">
-                    Explora listados verificados y datos de mercado en tiempo real. Todas las cartas son autenticadas mediante nuestro riguroso proceso de verificación digital.
+                    {category
+                        ? `Explora nuestra selección exclusiva de ${categoryNames[category as string].toLowerCase()} verificados.`
+                        : "Explora listados verificados y datos de mercado en tiempo real. Todas las cartas son autenticadas mediante nuestro riguroso proceso de verificación digital."}
                 </p>
             </div>
 
