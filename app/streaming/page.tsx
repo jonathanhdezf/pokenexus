@@ -53,13 +53,13 @@ export default function StreamingPage() {
                 <motion.div
                     layout
                     className={`relative transition-all duration-700 overflow-hidden shadow-3xl bg-black ${isTheaterMode
-                            ? 'w-full h-[85vh] rounded-none'
-                            : 'aspect-video w-full rounded-[40px] border border-white/10'
+                        ? 'w-full h-[85vh] rounded-none'
+                        : 'aspect-video w-full rounded-[40px] border border-white/10'
                         }`}
                 >
-                    {/* The Iframe with Optimized Embed URL and Full Permissions */}
+                    {/* The Iframe with Specific Latam Channel requested by User */}
                     <iframe
-                        src="https://pluto.tv/live-tv/6870072ca9d5c45c3e9466f1/embed?autoplay=true&mute=false"
+                        src="https://pluto.tv/latam/live-tv/6870072ca9d5c45c3e9466f1/embed?autoplay=true"
                         className="absolute inset-0 w-full h-full border-none z-0"
                         allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen; volume"
                         allowFullScreen
