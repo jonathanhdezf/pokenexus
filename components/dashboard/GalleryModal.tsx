@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, Image as ImageIcon, Trash2, Camera, Save, Loader2 } from "lucide-react";
+import { X, Upload, Image as ImageIcon, Trash2, Camera, Save, Loader2, Info } from "lucide-react";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
