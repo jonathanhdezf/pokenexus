@@ -28,7 +28,7 @@ export default function RootLayout({
                     <AudioProvider>
                         <AgeVerification />
                         <div className="absolute inset-0 bg-[url('/bg-noise.png')] opacity-5 pointer-events-none z-0"></div>
-                        <div className="relative z-10 flex flex-col min-h-screen">
+                        <div className="flex flex-col min-h-screen">
                             <Header />
                             <div className="flex-1">
                                 {children}

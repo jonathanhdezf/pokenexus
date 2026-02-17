@@ -41,7 +41,7 @@ export default async function DashboardPage() {
                 <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-legendary/5 blur-[150px] rounded-full" />
             </div>
 
-            <div className="relative z-10">
+            <div className="relative">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
                     <div>
