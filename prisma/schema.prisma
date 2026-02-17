@@ -147,6 +147,7 @@ model UserCard {
   condition     String
   acquiredPrice Decimal?
   acquiredAt    DateTime @default(now())
+  notes         String?  // New field for user comments/notes
 }
 
 model Purchase {
