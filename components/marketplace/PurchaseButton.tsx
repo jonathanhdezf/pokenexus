@@ -19,7 +19,8 @@ export default function PurchaseButton({ cardId, name, price, imageUrl, set }: P
 
     const handleOpenModal = () => {
         if (status !== "authenticated") {
-            alert("Please login to purchase items.");
+            // TODO: Replace with a proper toast notification
+            alert("Por favor inicia sesión para comprar artículos.");
             return;
         }
         setIsModalOpen(true);
@@ -37,7 +38,7 @@ export default function PurchaseButton({ cardId, name, price, imageUrl, set }: P
                         alt=""
                         className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500"
                     />
-                    Buy Now for {price}
+                    Comprar por {price}
                 </button>
             </div>
 
