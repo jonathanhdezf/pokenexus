@@ -107,13 +107,13 @@ export default function NotificationBell() {
                         className="absolute top-full right-0 mt-3 w-80 bg-[#111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] backdrop-blur-xl"
                     >
                         <div className="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                            <h3 className="font-bold text-sm">Notifications</h3>
+                            <h3 className="font-bold text-sm">Notificaciones</h3>
                             {unreadCount > 0 && (
                                 <button
                                     onClick={markAllAsRead}
                                     className="text-[10px] font-bold text-primary hover:text-white transition-colors flex items-center gap-1 uppercase tracking-tighter"
                                 >
-                                    <Check className="w-3 h-3" /> Mark all read
+                                    <Check className="w-3 h-3" /> Marcar todas leídas
                                 </button>
                             )}
                         </div>
@@ -121,7 +121,7 @@ export default function NotificationBell() {
                         <div className="max-h-96 overflow-y-auto custom-scrollbar">
                             {notifications.length === 0 ? (
                                 <div className="p-8 text-center text-gray-500 text-sm">
-                                    No notifications yet.
+                                    No tienes notificaciones.
                                 </div>
                             ) : (
                                 <div className="divide-y divide-white/5">
@@ -159,7 +159,7 @@ export default function NotificationBell() {
                                                         }}
                                                         className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
                                                     >
-                                                        View <ExternalLink className="w-2.5 h-2.5" />
+                                                        Ver <ExternalLink className="w-2.5 h-2.5" />
                                                     </Link>
                                                 )}
                                             </div>

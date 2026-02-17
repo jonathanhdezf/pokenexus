@@ -41,14 +41,14 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const session = await getSession();
 
     if (!session || !session.user?.email) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({ message: "No autorizado" }, { status: 401 });
     }
 
     const { amount } = await req.json();
     const bidAmount = Number(amount);
 
     if (!bidAmount || isNaN(bidAmount)) {
-        return NextResponse.json({ message: "Invalid bid amount" }, { status: 400 });
+        return NextResponse.json({ message: "Monto de oferta inválido" }, { status: 400 });
     }
 
     try {
@@ -66,7 +66,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
             });
 
             if (!listing || listing.status !== "ACTIVE" || (listing.endsAt && new Date(listing.endsAt) < new Date())) {
-                throw new Error("Auction is no longer active");
+                throw new Error("La subasta ya no está activa");
             }
 
             const currentPrice = listing.bids[0]?.amount ? Number(listing.bids[0].amount) : Number(listing.price);
@@ -74,7 +74,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
             const minRequired = currentPrice + minIncrement;
 
             if (bidAmount < minRequired) {
-                throw new Error(`Minimum bid required: $${minRequired}`);
+                throw new Error(`Oferta mínima requerida: $${minRequired}`);
             }
 
             // 2. Get user and check balance
@@ -82,9 +82,9 @@ export async function POST(req: Request, { params }: { params: { id: string } })
                 where: { email: session.user?.email! }
             });
 
-            if (!user) throw new Error("User not found");
+            if (!user) throw new Error("Usuario no encontrado");
             if (Number(user.walletBalance) < bidAmount) {
-                throw new Error("Insufficient funds in wallet");
+                throw new Error("Fondos insuficientes en la billetera");
             }
 
             // 3. Place Bid
@@ -105,8 +105,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
                     data: {
                         userId: listing.bids[0].userId,
                         type: "OUTBID",
-                        title: "You've been outbid!",
-                        message: `Someone placed a higher bid of $${bidAmount} on ${listing.card.name}.`,
+                        title: "¡Han superado tu oferta!",
+                        message: `Alguien ofreció $${bidAmount} por ${listing.card.name}.`,
                         link: `/auctions/${listing.id}`
                     }
                 });
