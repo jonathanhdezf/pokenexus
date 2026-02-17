@@ -6,6 +6,7 @@ import { Wallet } from "lucide-react";
 import PurchaseModal from "./PurchaseModal";
 
 interface PurchaseButtonProps {
+    listingId: string;
     cardId: string;
     name: string;
     price: string;
@@ -13,7 +14,7 @@ interface PurchaseButtonProps {
     set: string;
 }
 
-export default function PurchaseButton({ cardId, name, price, imageUrl, set }: PurchaseButtonProps) {
+export default function PurchaseButton({ listingId, cardId, name, price, imageUrl, set }: PurchaseButtonProps) {
     const { status } = useSession();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -45,6 +46,7 @@ export default function PurchaseButton({ cardId, name, price, imageUrl, set }: P
             <PurchaseModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
+                listingId={listingId}
                 card={{
                     id: cardId,
                     name,

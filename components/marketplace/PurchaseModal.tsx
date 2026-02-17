@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { useAudio } from "@/lib/audio-engine";
 
 interface PurchaseModalProps {
+    listingId: string;
     card: {
         id: string;
         name: string;
@@ -20,7 +21,7 @@ interface PurchaseModalProps {
     onClose: () => void;
 }
 
-export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalProps) {
+export default function PurchaseModal({ listingId, card, isOpen, onClose }: PurchaseModalProps) {
     const router = useRouter();
     const { data: session, update } = useSession();
     const [step, setStep] = useState<"confirm" | "processing" | "success">("confirm");
@@ -48,7 +49,7 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
             const res = await fetch("/api/purchase", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cardId: card.id }),
+                body: JSON.stringify({ listingId }),
             });
 
             const data = await res.json();

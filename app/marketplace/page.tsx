@@ -46,22 +46,29 @@ export default async function MarketplacePage({ searchParams }: Props) {
         ];
     }
 
-    const cards = await prisma.cardCatalog.findMany({
-        where,
-        include: {
-            marketPrices: {
-                orderBy: { recordedAt: 'desc' },
-                take: 1
-            }
+    const listings = await prisma.listing.findMany({
+        where: {
+            status: "ACTIVE",
+            card: where
         },
-        orderBy: sort === 'newest' ? { createdAt: 'desc' } : undefined
+        include: {
+            card: true,
+            user: {
+                select: {
+                    username: true,
+                    name: true
+                }
+            }
+        }
     });
 
-    let sortedCards = [...cards];
+    let sortedListings = [...listings];
     if (sort === 'price_asc') {
-        sortedCards.sort((a, b) => Number(a.marketPrices[0]?.price || 0) - Number(b.marketPrices[0]?.price || 0));
+        sortedListings.sort((a, b) => Number(a.price) - Number(b.price));
     } else if (sort === 'price_desc') {
-        sortedCards.sort((a, b) => Number(b.marketPrices[0]?.price || 0) - Number(a.marketPrices[0]?.price || 0));
+        sortedListings.sort((a, b) => Number(b.price) - Number(a.price));
+    } else if (sort === 'newest') {
+        sortedListings.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
 
     return (
@@ -120,7 +127,7 @@ export default async function MarketplacePage({ searchParams }: Props) {
                     {/* Stats bar */}
                     <div className="flex flex-wrap gap-4 mt-10">
                         {[
-                            { label: "Cartas Listadas", value: `${sortedCards.length}`, icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luxury-ball.png" },
+                            { label: "Cartas Listadas", value: `${sortedListings.length}`, icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luxury-ball.png" },
                             { label: "Vendedores Activos", value: "324", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-share.png" },
                             { label: "Ventas Hoy", value: "1,204", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/amulet-coin.png" },
                         ].map((stat) => (
@@ -171,26 +178,25 @@ export default async function MarketplacePage({ searchParams }: Props) {
             <section className="px-6 pb-16">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
-                        {sortedCards.map((card) => {
-                            const price = card.marketPrices[0]?.price
-                                ? `$${Number(card.marketPrices[0].price).toLocaleString()}`
-                                : "N/A";
+                        {sortedListings.map((listing) => {
+                            const price = `$${Number(listing.price).toLocaleString()}`;
+                            const rarity = listing.card.rarity?.toLowerCase().includes("secret") ? "secret" : listing.card.rarity?.toLowerCase().includes("holo") ? "ultra-rare" : "common";
 
                             return (
                                 <InteractiveCard
-                                    key={card.id}
-                                    id={card.id}
-                                    name={card.name}
-                                    set={card.set}
+                                    key={listing.id}
+                                    id={listing.id} // Passing listing ID
+                                    name={listing.card.name}
+                                    set={listing.card.set}
                                     price={price}
-                                    imageUrl={card.imageUrl || ""}
-                                    rarity={card.rarity?.toLowerCase().includes("secret") ? "secret" : card.rarity?.toLowerCase().includes("holo") ? "ultra-rare" : "common"}
+                                    imageUrl={listing.card.imageUrl || ""}
+                                    rarity={rarity}
                                 />
                             );
                         })}
                     </div>
 
-                    {sortedCards.length === 0 && (
+                    {sortedListings.length === 0 && (
                         <div className="text-center py-32 rounded-[32px] glass">
                             <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/54.png" alt="" className="w-24 h-24 mx-auto mb-6 opacity-30" />
                             <h3 className="text-xl font-black text-gray-400 mb-2">No se encontraron cartas</h3>

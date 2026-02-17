@@ -148,3 +148,15 @@ model UserCard {
   acquiredPrice Decimal?
   acquiredAt    DateTime @default(now())
 }
+
+model Purchase {
+  id          String   @id @default(uuid())
+  cardId      String
+  cardName    String
+  cardImage   String?
+  sellerId    String
+  buyerId     String
+  buyerAlias  String
+  price       Decimal
+  createdAt   DateTime @default(now())
+}

@@ -22,19 +22,31 @@ const rarityMap: Record<string, string> = {
 };
 
 export default async function CardDetailPage({ params }: { params: { id: string } }) {
-    const card = await prisma.cardCatalog.findUnique({
+    const listing = await prisma.listing.findUnique({
         where: { id: params.id },
         include: {
-            marketPrices: {
-                orderBy: { recordedAt: 'asc' },
-                take: 12
+            card: {
+                include: {
+                    marketPrices: {
+                        orderBy: { recordedAt: 'asc' },
+                        take: 12
+                    }
+                }
+            },
+            user: {
+                select: {
+                    username: true,
+                    name: true
+                }
             }
         }
     });
 
-    if (!card) {
+    if (!listing || listing.status !== "ACTIVE") {
         return notFound();
     }
+
+    const { card } = listing;
 
     // Format data for chart
     const chartData = card.marketPrices.map((mp, index) => ({
@@ -50,10 +62,7 @@ export default async function CardDetailPage({ params }: { params: { id: string 
         chartData.push({ date: 'Mar', price: 150, condition: 'NM' });
     }
 
-    const currentPrice = card.marketPrices.length > 0
-        ? `$${Number(card.marketPrices[card.marketPrices.length - 1].price).toLocaleString()}`
-        : "Precio No Disponible";
-
+    const currentPrice = `$${Number(listing.price).toLocaleString()}`;
     const translatedRarity = rarityMap[card.rarity?.toLowerCase() || ""] || card.rarity || "Común";
 
     return (
@@ -107,6 +116,7 @@ export default async function CardDetailPage({ params }: { params: { id: string 
                                 {translatedRarity}
                             </span>
                             <span className="text-gray-500 text-sm font-mono">#{card.cardNumber} / {card.set}</span>
+                            <span className="text-primary text-xs font-black uppercase tracking-widest">Vendedor: {listing.user.username || "Maestro Pokemon"}</span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black mb-4 font-display text-white drop-shadow-lg leading-tight">{card.name}</h1>
                         <div className="flex items-baseline gap-4 mb-6">
@@ -119,6 +129,7 @@ export default async function CardDetailPage({ params }: { params: { id: string 
 
                     <div className="grid grid-cols-2 gap-4 mb-8">
                         <PurchaseButton
+                            listingId={listing.id}
                             cardId={card.id}
                             name={card.name}
                             price={currentPrice}
@@ -134,9 +145,6 @@ export default async function CardDetailPage({ params }: { params: { id: string 
                     <div className="mb-8 p-6 bg-surface/30 rounded-2xl border border-white/5">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-bold text-sm uppercase tracking-widest text-gray-400">Historial de Precios</h3>
-                            <div className="flex gap-2">
-                                {/* Chart ranges could go here */}
-                            </div>
                         </div>
                         <div className="h-64 w-full">
                             <PriceChart data={chartData} />

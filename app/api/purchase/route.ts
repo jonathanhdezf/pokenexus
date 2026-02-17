@@ -9,69 +9,86 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { cardId } = await req.json();
+    const { listingId } = await req.json();
 
-    if (!cardId) {
-        return NextResponse.json({ message: "Card ID required" }, { status: 400 });
+    if (!listingId) {
+        return NextResponse.json({ message: "Listing ID required" }, { status: 400 });
     }
 
     try {
-        // 1. Get the card and its market price
-        const card = await prisma.cardCatalog.findUnique({
-            where: { id: cardId },
-            include: {
-                marketPrices: {
-                    orderBy: { recordedAt: 'desc' },
-                    take: 1
-                }
-            }
+        // 1. Get the listing and user
+        const listing = await prisma.listing.findUnique({
+            where: { id: listingId },
+            include: { card: true }
         });
 
-        if (!card) {
-            return NextResponse.json({ message: "Card not found" }, { status: 404 });
+        if (!listing || listing.status !== "ACTIVE") {
+            return NextResponse.json({ message: "Esta carta ya no está disponible." }, { status: 404 });
         }
 
-        const price = card.marketPrices[0]?.price ? Number(card.marketPrices[0].price) : 0;
-
-        if (price <= 0) {
-            return NextResponse.json({ message: "Card unavailable for purchase" }, { status: 400 });
-        }
-
-        // 2. Get user wallet balance
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
         });
 
         if (!user) {
-            return NextResponse.json({ message: "User not found" }, { status: 404 });
+            return NextResponse.json({ message: "Usuario no encontrado" }, { status: 404 });
         }
 
+        const price = Number(listing.price);
         const balance = Number(user.walletBalance);
 
         if (balance < price) {
-            return NextResponse.json({ message: "Insufficient funds" }, { status: 400 });
+            return NextResponse.json({ message: "Fondos insuficientes" }, { status: 400 });
         }
 
-        // 3. Process Transaction
-        // Deduct Funds
-        await prisma.user.update({
-            where: { id: user.id },
-            data: {
-                walletBalance: balance - price
-            }
+        // 2. Process Transaction in Atomic Block
+        const result = await prisma.$transaction(async (tx) => {
+            // Deduct Funds
+            const updatedUser = await tx.user.update({
+                where: { id: user.id },
+                data: {
+                    walletBalance: balance - price
+                }
+            });
+
+            // Mark Listing as SOLD (This makes it disappear from Marketplace fetch)
+            await tx.listing.update({
+                where: { id: listingId },
+                data: { status: "SOLD" }
+            });
+
+            // Create Historical Record
+            await tx.purchase.create({
+                data: {
+                    cardId: listing.cardId,
+                    cardName: listing.card.name,
+                    cardImage: listing.images,
+                    sellerId: listing.userId,
+                    buyerId: user.id,
+                    buyerAlias: user.username || user.name || "Maestro Trainer",
+                    price: price,
+                    createdAt: new Date()
+                }
+            });
+
+            // Add to User's Collection
+            await tx.userCard.create({
+                data: {
+                    userId: user.id,
+                    cardId: listing.cardId,
+                    condition: listing.condition,
+                    acquiredPrice: price,
+                    acquiredAt: new Date()
+                }
+            });
+
+            return { newBalance: Number(updatedUser.walletBalance) };
         });
 
-        // Add to Collection
-        await prisma.userCard.create({
-            data: {
-                userId: user.id,
-                cardId: card.id,
-                condition: "Near Mint", // Default for market purchases
-                acquiredPrice: price
-            }
+        return NextResponse.json({
+            message: "Compra exitosa",
+            newBalance: result.newBalance
         });
-
-        return NextResponse.json({ message: "Purchase successful", newBalance: balance - price });
 
     } catch (error) {
         console.error("Purchase error:", error);
