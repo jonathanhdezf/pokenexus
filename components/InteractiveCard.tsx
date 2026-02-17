@@ -14,6 +14,19 @@ interface CardProps {
     onClick?: () => void;
 }
 
+const rarityMap: Record<string, string> = {
+    "common": "Común",
+    "uncommon": "Infrecuente",
+    "rare": "Rara",
+    "ultra-rare": "Ultra Rara",
+    "secret": "Secreta",
+    "promo": "Promo",
+    "illustration rare": "Ilustración Rara",
+    "special illustration rare": "Ilustración Especial Rara",
+    "hyper rare": "Hiper Rara",
+    "double rare": "Doble Rara",
+};
+
 export default function InteractiveCard({ id, name, set, price, imageUrl, rarity, onClick }: CardProps) {
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -105,7 +118,7 @@ export default function InteractiveCard({ id, name, set, price, imageUrl, rarity
                     </span>
                     {rarity !== 'common' && (
                         <span className="text-[10px] font-black text-yellow-500 uppercase tracking-tighter px-1.5 py-0.5 bg-yellow-500/10 border border-yellow-500/20 rounded">
-                            {rarity}
+                            {rarityMap[rarity?.toLowerCase()] || rarity}
                         </span>
                     )}
                 </div>

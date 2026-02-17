@@ -12,6 +12,20 @@ const POKEMON_TYPES = [
     "Fire", "Grass", "Lightning", "Metal", "Psychic", "Water"
 ];
 
+const TYPE_TRANSLATIONS: Record<string, string> = {
+    "Colorless": "Incoloro",
+    "Darkness": "Oscura",
+    "Dragon": "Dragón",
+    "Fairy": "Hada",
+    "Fighting": "Lucha",
+    "Fire": "Fuego",
+    "Grass": "Planta",
+    "Lightning": "Rayo",
+    "Metal": "Metálica",
+    "Psychic": "Psíquica",
+    "Water": "Agua"
+};
+
 const getMarketPrice = (card: any) => {
     if (!card) return "N/A";
     try {
@@ -150,7 +164,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                                 {executedSearchTerm
                                     ? `RESULTADOS PARA "${executedSearchTerm.toUpperCase()}"`
                                     : selectedType
-                                        ? `CARTAS TIPO ${selectedType.toUpperCase()}`
+                                        ? `CARTAS TIPO ${TYPE_TRANSLATIONS[selectedType]?.toUpperCase() || selectedType.toUpperCase()}`
                                         : "CATÁLOGO NEXUS"}
                                 {cards.length > 0 && (
                                     <span className="text-sm font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
@@ -212,7 +226,7 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                                     : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:bg-white/10"
                                     }`}
                             >
-                                {type}
+                                {TYPE_TRANSLATIONS[type] || type}
                             </button>
                         ))}
                     </div>
@@ -230,8 +244,8 @@ export default function CardCatalog({ initialCards }: CardCatalogProps) {
                                 >
                                     <InteractiveCard
                                         id={card.id}
-                                        name={card.name || "Unknown"}
-                                        set={card.set?.name || "Unknown Set"}
+                                        name={card.name || "Desconocido"}
+                                        set={card.set?.name || "Set Desconocido"}
                                         price={getMarketPrice(card)}
                                         imageUrl={card.images?.large || card.images?.small || ""}
                                         rarity={mapRarity(card.rarity)}
