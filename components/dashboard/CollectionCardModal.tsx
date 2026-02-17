@@ -36,13 +36,13 @@ export default function CollectionCardModal({ isOpen, onClose, userCard }: Colle
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[50] flex items-center justify-center p-4 pt-24 md:pt-4">
+                <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/90 backdrop-blur-md"
+                        className="absolute inset-0 bg-black/95 backdrop-blur-xl"
                     />
 
                     <motion.div
