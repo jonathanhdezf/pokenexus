@@ -161,7 +161,13 @@ export default async function AuctionsPage() {
                                 const highestBid = auction.bids[0];
                                 const currentPrice = highestBid?.amount ? Number(highestBid.amount) : Number(auction.price);
                                 const topBidder = highestBid?.user?.username;
-                                const images = auction.images ? JSON.parse(auction.images) : [];
+                                let images: string[] = [];
+                                try {
+                                    images = auction.images ? JSON.parse(auction.images) : [];
+                                    if (!Array.isArray(images)) images = [auction.images];
+                                } catch {
+                                    images = auction.images ? [auction.images] : [];
+                                }
 
                                 return (
                                     <AuctionCard
