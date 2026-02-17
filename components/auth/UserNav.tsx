@@ -38,7 +38,7 @@ export default function UserNav() {
     if (status === "unauthenticated") {
         return (
             <Link href="/login" className="text-sm font-bold text-white hover:text-primary transition-colors">
-                Log In
+                Iniciar Sesión
             </Link>
         );
     }
@@ -47,7 +47,7 @@ export default function UserNav() {
         <div className="flex items-center gap-4 relative" ref={dropdownRef}>
             {/* Wallet Display (Desktop) */}
             <div className="hidden lg:flex flex-col items-end px-3 py-1 bg-white/5 border border-white/10 rounded-lg">
-                <span className="text-[10px] text-gray-500 font-bold uppercase leading-none mb-1">Wallet</span>
+                <span className="text-[10px] text-gray-500 font-bold uppercase leading-none mb-1">Billetera</span>
                 <span className="text-sm font-mono font-bold text-primary leading-none">
                     ${Number((session?.user as any)?.walletBalance || 0).toLocaleString()}
                 </span>
@@ -88,14 +88,14 @@ export default function UserNav() {
                                 className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-left"
                             >
                                 <LayoutDashboard className="w-4 h-4" />
-                                <span>My Collection</span>
+                                <span>Mi Colección</span>
                             </button>
                             <button
                                 onClick={() => handleNavigation("/settings")}
                                 className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-left"
                             >
                                 <Settings className="w-4 h-4" />
-                                <span>Account Settings</span>
+                                <span>Configuración</span>
                             </button>
                         </div>
 
@@ -105,7 +105,7 @@ export default function UserNav() {
                                 className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left"
                             >
                                 <LogOut className="w-4 h-4" />
-                                <span>Sign Out</span>
+                                <span>Cerrar Sesión</span>
                             </button>
                         </div>
                     </motion.div>

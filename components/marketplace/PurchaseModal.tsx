@@ -34,7 +34,7 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
 
     const handleConfirm = async () => {
         if (userBalance < cardPrice) {
-            setError("Insufficient funds in your wallet.");
+            setError("Fondos insuficientes en tu billetera.");
             return;
         }
 
@@ -54,7 +54,7 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
             const data = await res.json();
 
             if (!res.ok) {
-                throw new Error(data.message || "Purchase failed");
+                throw new Error(data.message || "La compra falló");
             }
 
             // Update the session balance locally
@@ -115,8 +115,8 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
                                             <Wallet className="w-8 h-8 text-primary" />
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl font-bold">Confirm Purchase</h2>
-                                            <p className="text-gray-400 text-sm">Review your order details below.</p>
+                                            <h2 className="text-2xl font-bold">Confirmar Compra</h2>
+                                            <p className="text-gray-400 text-sm">Revisa los detalles de tu pedido antes de continuar.</p>
                                         </div>
                                     </div>
 
@@ -128,18 +128,18 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
                                             <div className="text-xs text-primary font-bold uppercase tracking-wider mb-1">{card.set}</div>
                                             <h3 className="text-lg font-bold truncate mb-2">{card.name}</h3>
                                             <div className="flex items-center gap-2 text-xs text-gray-500">
-                                                <ShieldCheck className="w-4 h-4 text-green-500" /> Inspected & Authenticated
+                                                <ShieldCheck className="w-4 h-4 text-green-500" /> Inspeccionada y Autenticada
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-3 mb-8">
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-gray-400">Card Price</span>
+                                            <span className="text-gray-400">Precio de la Carta</span>
                                             <span className="font-mono text-white font-bold">${cardPrice.toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-gray-400">Processing Fee</span>
+                                            <span className="text-gray-400">Comisión de Servicio</span>
                                             <span className="font-mono text-green-400 font-bold">$0.00</span>
                                         </div>
                                         <div className="h-px bg-white/10 my-1" />
@@ -163,10 +163,10 @@ export default function PurchaseModal({ card, isOpen, onClose }: PurchaseModalPr
                                             onClick={handleConfirm}
                                             className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition-all transform active:scale-[0.98] shadow-lg shadow-white/5"
                                         >
-                                            Confirm Transaction
+                                            Confirmar Transacción
                                         </button>
                                         <div className="text-center">
-                                            <span className="text-xs text-gray-500">Your balance: </span>
+                                            <span className="text-xs text-gray-500">Tu saldo disponible: </span>
                                             <span className="text-xs font-mono font-bold text-gray-300">${userBalance.toLocaleString()}</span>
                                         </div>
                                     </div>
