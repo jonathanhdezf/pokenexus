@@ -148,6 +148,7 @@ model UserCard {
   acquiredPrice Decimal?
   acquiredAt    DateTime @default(now())
   notes         String?  // New field for user comments/notes
+  galleryImages String?  // Stores JSON array of up to 4 image URLs
 }
 
 model Purchase {

@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShieldCheck, History, Info, MessageSquare, Calendar, User, DollarSign, ExternalLink } from "lucide-react";
+import { X, ShieldCheck, History, Info, MessageSquare, Calendar, User, DollarSign, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import GalleryModal from "./GalleryModal";
 
 interface CollectionCardModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface CollectionCardModalProps {
 export default function CollectionCardModal({ isOpen, onClose, userCard }: CollectionCardModalProps) {
     const [history, setHistory] = useState<any[]>([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
+    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
     useEffect(() => {
         if (isOpen && userCard) {
@@ -29,10 +31,12 @@ export default function CollectionCardModal({ isOpen, onClose, userCard }: Colle
 
     if (!userCard) return null;
 
+    const galleryImages = userCard.galleryImages ? JSON.parse(userCard.galleryImages) : [];
+
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[50] flex items-center justify-center p-4 pt-24 md:pt-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -51,9 +55,9 @@ export default function CollectionCardModal({ isOpen, onClose, userCard }: Colle
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="absolute top-6 right-6 p-2 text-gray-400 hover:text-white transition-colors z-50 bg-black/40 rounded-full"
+                            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors z-50 bg-black/50 rounded-full border border-white/10 hover:border-white/30"
                         >
-                            <X className="w-6 h-6" />
+                            <X className="w-5 h-5" />
                         </button>
 
                         {/* Left: Card Display */}
@@ -173,7 +177,15 @@ export default function CollectionCardModal({ isOpen, onClose, userCard }: Colle
                                     )}
                                 </div>
 
-                                <div className="mt-8 pt-8 border-t border-white/5 flex justify-end">
+                                <div className="mt-8 pt-8 border-t border-white/5 flex justify-between items-center">
+                                    <button
+                                        onClick={() => setIsGalleryOpen(true)}
+                                        className="flex items-center gap-2 text-[10px] font-black text-primary hover:text-white uppercase tracking-widest transition-colors px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 hover:bg-primary/20"
+                                    >
+                                        <ImageIcon className="w-3 h-3" />
+                                        Galería Personal
+                                    </button>
+
                                     <button className="flex items-center gap-2 text-[10px] font-black text-gray-500 hover:text-white uppercase tracking-widest transition-colors">
                                         Ver Certificado Digital <ExternalLink className="w-3 h-3" />
                                     </button>
@@ -183,6 +195,13 @@ export default function CollectionCardModal({ isOpen, onClose, userCard }: Colle
                     </motion.div>
                 </div>
             )}
+
+            <GalleryModal
+                isOpen={isGalleryOpen}
+                onClose={() => setIsGalleryOpen(false)}
+                userCardId={userCard.id}
+                existingImages={galleryImages}
+            />
         </AnimatePresence>
     );
 }
